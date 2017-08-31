@@ -43,7 +43,7 @@ namespace TGC.Group.Model{
             var floorTexture = TgcTexture.createTexture(d3dDevice, MediaDir + "tierra.jpg");
             Floor = new TgcPlane(new Vector3(-FloorLength / 2, 0, -FloorLength/2), new Vector3(FloorLength, 0, FloorLength), TgcPlane.Orientations.XZplane, floorTexture, 70f, 70f );
 
-            CreateTrees(500);
+            CreateTrees(10000);
 
         }
 
@@ -95,6 +95,9 @@ namespace TGC.Group.Model{
         ///Hacer Dispose() de todos los objetos creados.
         ///Es muy importante liberar los recursos, sobretodo los gráficos ya que quedan bloqueados en el device de video.
         public override void Dispose(){
+            foreach (TgcMesh mesh in Trees){
+                mesh.dispose();
+            }
         }
     }
 }
