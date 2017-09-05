@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
 using TGC.Core.Direct3D;
@@ -21,6 +22,7 @@ namespace TGC.Group.Form{
         private TgcD3dInput Input { get; set; }
 
         private void GameForm_Load(object sender, EventArgs e){
+            this.Text = "4everAl1 - Survival Craft";
         }
 
         private void GameForm_FormClosing(object sender, FormClosingEventArgs e){
@@ -100,14 +102,11 @@ namespace TGC.Group.Form{
             TexturesPool.Instance.clearAll();
         }
 
-        private void panel3D_Paint(object sender, PaintEventArgs e){
-
-        }
-
         private void button_play_Click(object sender, EventArgs e){
             this.button_quit.Visible = false;
             this.button_play.Visible = false;
-            
+            this.button_mode.Visible = false;
+
             InitGraphics();//Iniciar graficos.
             Text = Modelo.Name + " - " + Modelo.Description;//Titulo de la ventana principal.
             panel3D.Focus();//Focus panel3D.
@@ -116,6 +115,13 @@ namespace TGC.Group.Form{
 
         private void button_quit_Click(object sender, EventArgs e){
             this.Close();
+        }
+
+        private void panel3D_Paint(object sender, PaintEventArgs e){
+            //this.BackColor = Color.Black;
+            //private Graphics newGraphics;
+             //"Media\\logo.png");
+
         }
     }
 }
