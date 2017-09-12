@@ -86,9 +86,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Game.settings</DependentUpon>
     </Compile>
+    <Compile Include="Model\Camera\FPCamera.cs" />
     <Compile Include="Model\Camera\TgcFpsCamera.cs" />
     <Compile Include="Model\GameModel.cs" />
-    <Compile Include="Model\Mundo\Mapa.cs" />
+    <Compile Include="Model\GameObjects\Mapa.cs" />
+    <Compile Include="Model\GameObjects\ObjectCreator.cs" />
+    <Compile Include="Model\GameObjects\Personaje.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form\GameForm.resx">

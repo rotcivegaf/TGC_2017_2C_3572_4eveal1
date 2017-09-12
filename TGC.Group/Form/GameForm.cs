@@ -22,7 +22,20 @@ namespace TGC.Group.Form{
         private TgcD3dInput Input { get; set; }
 
         private void GameForm_Load(object sender, EventArgs e){
-            this.Text = "4everAl1 - Survival Craft";
+            InitRenderLoop();//Inicio el ciclo de Render.
+
+
+
+            this.button_quit.Visible = false;
+            this.button_play.Visible = false;
+            this.button_mode.Visible = false;
+
+            InitGraphics();//Iniciar graficos.
+            Text = Modelo.Name + " - " + Modelo.Description;//Titulo de la ventana principal.
+            panel3D.Focus();//Focus panel3D.
+            InitRenderLoop();//Inicio el ciclo de Render.
+
+
         }
 
         private void GameForm_FormClosing(object sender, FormClosingEventArgs e){
@@ -43,7 +56,7 @@ namespace TGC.Group.Form{
             var currentDirectory = Environment.CurrentDirectory + "\\";
             TgcShaders.Instance.loadCommonShaders(currentDirectory + Game.Default.ShadersDirectory);//Cargar shaders del framework
             //Juego a ejecutar, si quisiéramos tener diferentes modelos aquí podemos cambiar la instancia e invocar a otra clase.
-            Modelo = new GameModel(currentDirectory + Game.Default.MediaDirectory,
+            Modelo = new Model.GameModel(currentDirectory + Game.Default.MediaDirectory,
                 currentDirectory + Game.Default.ShadersDirectory);
             //Cargar juego.
             ExecuteModel();
