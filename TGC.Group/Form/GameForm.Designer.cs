@@ -33,6 +33,7 @@
             this.button_mode = new System.Windows.Forms.Button();
             this.button_quit = new System.Windows.Forms.Button();
             this.button_play = new System.Windows.Forms.Button();
+            this.inventarioForm = new System.Windows.Forms.Panel();
             this.panel3D.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -41,6 +42,7 @@
             this.panel3D.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.panel3D.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("panel3D.BackgroundImage")));
             this.panel3D.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.panel3D.Controls.Add(this.inventarioForm);
             this.panel3D.Controls.Add(this.button_mode);
             this.panel3D.Controls.Add(this.button_quit);
             this.panel3D.Controls.Add(this.button_play);
@@ -83,6 +85,14 @@
             this.button_play.UseVisualStyleBackColor = false;
             this.button_play.Click += new System.EventHandler(this.button_play_Click);
             // 
+            // inventarioForm
+            // 
+            this.inventarioForm.Location = new System.Drawing.Point(159, 144);
+            this.inventarioForm.Name = "inventarioForm";
+            this.inventarioForm.Size = new System.Drawing.Size(483, 270);
+            this.inventarioForm.TabIndex = 5;
+            this.inventarioForm.Paint += new System.Windows.Forms.PaintEventHandler(this.inventarioForm_Paint);
+            // 
             // GameForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -103,9 +113,10 @@
         #endregion
 
         private System.Windows.Forms.Panel panel3D;
-        private System.Windows.Forms.Button button_play;
-        private System.Windows.Forms.Button button_quit;
-        private System.Windows.Forms.Button button_mode;
+        public System.Windows.Forms.Button button_play;
+        public System.Windows.Forms.Button button_quit;
+        public System.Windows.Forms.Button button_mode;
+        public System.Windows.Forms.Panel inventarioForm;
     }
 }
 

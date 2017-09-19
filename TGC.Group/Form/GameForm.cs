@@ -20,9 +20,11 @@ namespace TGC.Group.Form{
         private bool ApplicationRunning { get; set; }
         private TgcDirectSound DirectSound { get; set; }
         private TgcD3dInput Input { get; set; }
+        public int Mode = 0;
 
         private void GameForm_Load(object sender, EventArgs e){
             InitRenderLoop();//Inicio el ciclo de Render.
+            this.inventarioForm.Visible = false;
 
 
 
@@ -57,7 +59,7 @@ namespace TGC.Group.Form{
             TgcShaders.Instance.loadCommonShaders(currentDirectory + Game.Default.ShadersDirectory);//Cargar shaders del framework
             //Juego a ejecutar, si quisiéramos tener diferentes modelos aquí podemos cambiar la instancia e invocar a otra clase.
             Modelo = new Model.GameModel(currentDirectory + Game.Default.MediaDirectory,
-                currentDirectory + Game.Default.ShadersDirectory);
+                currentDirectory + Game.Default.ShadersDirectory, this);
             //Cargar juego.
             ExecuteModel();
         }
@@ -124,9 +126,9 @@ namespace TGC.Group.Form{
             Text = Modelo.Name + " - " + Modelo.Description;//Titulo de la ventana principal.
             panel3D.Focus();//Focus panel3D.
             InitRenderLoop();//Inicio el ciclo de Render.
-        }
+    }
 
-        private void button_quit_Click(object sender, EventArgs e){
+    private void button_quit_Click(object sender, EventArgs e){
             this.Close();
         }
 
@@ -134,6 +136,10 @@ namespace TGC.Group.Form{
             //this.BackColor = Color.Black;
             //private Graphics newGraphics;
              //"Media\\logo.png");
+
+        }
+
+        private void inventarioForm_Paint(object sender, PaintEventArgs e){
 
         }
     }

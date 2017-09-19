@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TGC.Group.Model.GameObject
-{
-    class Personaje
-    {
+namespace TGC.Group.Model.GameObject{
+    public class Personaje{
+
     }
 }
