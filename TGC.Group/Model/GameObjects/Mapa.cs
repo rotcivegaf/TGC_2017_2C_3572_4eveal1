@@ -56,6 +56,66 @@ namespace TGC.Group.Model.GameObjects{
             ObjetosMesh.AddRange(creador.createObjects(100, "Meshes\\Roca\\Roca-TgcScene.xml", 3, xIni, zIni));
         }
 
+        public float getY(float posX, float posZ, Vector3 moveVector) {
+            int xF = (int)Math.Floor(posX / 8);
+            int zF = (int)Math.Floor(posZ / 8);
+
+            //int y1 = heightmap[(int)x, (int)z];
+
+            //return (y1 * scaleY) + 15;
+
+            float p1 = heightmap[xF  , zF  ];
+            float p2 = heightmap[xF+1, zF  ];
+            float p3 = heightmap[xF  , zF+1];
+            float p4 = heightmap[xF+1, zF+1];
+
+            float absX = Math.Abs(moveVector.X);
+            float absZ = Math.Abs(moveVector.Z); 
+
+            if (moveVector.X == 0) {
+                absX = 0.5f;
+            }
+            if (moveVector.Z == 0) {
+                absZ = 1f;
+            }
+            float a = (float)((moveVector.X / absX) * (posX-Math.Truncate(posX)));
+
+
+            //float a = (float)(((() )) * (((moveVector.Z / absZ)) - Math.Truncate(posZ)));
+            
+            float deltaY = a * (p1-p4);
+
+
+            float y = heightmap[(int)posX/8, (int)posZ/8] + deltaY;
+
+            //(p1 +  * (p1 - p2))
+              //  + (((float)(posX - Math.Truncate(posX))) * (p1 - p3));
+            return (y * scaleY) + 15;
+
+
+
+            //float x = posX/8;
+            //float z = posZ/8;
+            /* int y11 = heightmap[(int)x - 1, (int)z - 1];
+            int y12 = heightmap[(int)x - 1, (int)z];
+            int y13 = heightmap[(int)x - 1, (int)z + 1];
+            int y21 = heightmap[(int)x, (int)z - 1];
+            int y22 = heightmap[(int)x, (int)z];
+            int y23 = heightmap[(int)x, (int)z + 1];
+            int y31 = heightmap[(int)x + 1, (int)z - 1];
+            int y32 = heightmap[(int)x + 1, (int)z];
+            int y33 = heightmap[(int)x + 1, (int)z + 1];
+            */
+            //int y1 = heightmap[, (int)Math.Floor(z)];
+            //int y2 = heightmap[(int)Math.Ceiling(x), (int)Math.Ceiling(z)];
+            //float y = (float) y2 + (float) y1 * (float) (Math.Abs(x - z) - Math.Floor(Math.Abs(x - z)));
+            /*
+            // int y = heightmap[(int)x, (int)z];
+            x x x
+            x x x
+            x x x*/
+        }
+
         private Texture loadTerrainTexture(Microsoft.DirectX.Direct3D.Device d3dDevice, string path) {
             //Rotar e invertir textura
             var b = (Bitmap)Image.FromFile(path);
@@ -86,8 +146,7 @@ namespace TGC.Group.Model.GameObjects{
             for (i = 0; i < width; i++){
                 heightmap[width-1, i] = heightmap[0, i];
             }
-
-
+            
             return heightmap;
         }
         private Vector3 crearVertice(int i, int j){
@@ -95,8 +154,6 @@ namespace TGC.Group.Model.GameObjects{
         }
         
         private Vector2 crearTextura(int u, int v){
-
-//            return new Vector2(u / (float)heightmap.GetLength(0), v / (float)heightmap.GetLength(1));
             return new Vector2(u / (float)32, v / (float)32);
         }
 

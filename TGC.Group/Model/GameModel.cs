@@ -12,11 +12,13 @@ using TGC.Core.Utils;
 using TGC.Core.SceneLoader;
 
 using TGC.Group.Model.GameObjects;
+using TGC.Group.Model.Camera;
 using TGC.Group.Form;
 
 namespace TGC.Group.Model{
     public class GameModel : TgcExample{
         public List<Mapa> mapas = new List<Mapa>();
+        public Mapa mapaActual;
         GameForm formPrincipal;
 
         public GameModel(string mediaDir, string shadersDir, GameForm form) : base(mediaDir, shadersDir){
@@ -30,22 +32,27 @@ namespace TGC.Group.Model{
         public override void Init(){
             crearMapas();
             if (formPrincipal.Mode == 0){
-                Camara = new TgcFpsCamera(new Vector3(2 * 4096, 200f, 2 * 4096), 500f, 500f, Input);
+                var posZ = 100;
+                var posX = 100;
+                Camara = new FPCamera(new Vector3(posX, 200f, posZ), 10f, 500f, Input, mapaActual);
             } else{
-                //Camara = new TgcFpsCamera(Input, 2 * 4096, -(2 * 4096), (2 * 4096), -(2 * 4096));
+                Camara = new TgcFpsCamera(new Vector3(2 * 4096, 200f, 2 * 4096), 500f, 500f, Input);
             }
         }
 
         public void crearMapas(){
             Mapa mapa;
+            mapa = new Mapa(MediaDir, 0, 0);
+            mapaActual = mapa;
+            mapas.Add(mapa);
 
-            for (int i = 0; i <= 4; i++){
+            /*for (int i = 0; i <= 4; i++){
                 for (int j = 0; j <= 4; j++){
                     mapa = new Mapa(MediaDir, (i * 4096), j * 4096);
                     mapas.Add(mapa);
                 }
-            }
-           
+            }*/
+
         }
 
         //Se llama en cada frame. Se debe escribir toda la lógica de computo del modelo, así como también verificar entradas del usuario y reacciones ante ellas.
