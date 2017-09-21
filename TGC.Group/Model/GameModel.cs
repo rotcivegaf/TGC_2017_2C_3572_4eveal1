@@ -28,12 +28,12 @@ namespace TGC.Group.Model{
             formPrincipal = form;
         }
         
-        ///Se llama una sola vez, al principio cuando se ejecuta el ejemplo. Escribir aquí todo el código de inicialización: cargar modelos, texturas, estructuras de optimización, todo procesamiento que podemos pre calcular para nuestro juego.
+        ///Se llama una sola vez, al principio cuando se ejecuta el ejemplo. Escribir aquÃ­ todo el cÃ³digo de inicializaciÃ³n: cargar modelos, texturas, estructuras de optimizaciÃ³n, todo procesamiento que podemos pre calcular para nuestro juego.
         public override void Init(){
             crearMapas();
             if (formPrincipal.Mode == 0){
-                var posZ = 100;
-                var posX = 100;
+                var posZ = mapaActual.xIni + 3000;
+                var posX = mapaActual.zIni + 3000;
                 Camara = new FPCamera(new Vector3(posX, 200f, posZ), 10f, 500f, Input, mapaActual);
             } else{
                 Camara = new TgcFpsCamera(new Vector3(2 * 4096, 200f, 2 * 4096), 500f, 500f, Input);
@@ -42,27 +42,27 @@ namespace TGC.Group.Model{
 
         public void crearMapas(){
             Mapa mapa;
-            mapa = new Mapa(MediaDir, 0, 0);
-            mapaActual = mapa;
-            mapas.Add(mapa);
-
-            /*for (int i = 0; i <= 4; i++){
+            
+            for (int i = 0; i <= 4; i++){
                 for (int j = 0; j <= 4; j++){
                     mapa = new Mapa(MediaDir, (i * 4096), j * 4096);
                     mapas.Add(mapa);
+                    
+                    if (i==2 && j==2){//chanchada para obtener el mapa central, no tengo para perobarlo...
+                        mapaActual = mapa;
+                    }
                 }
-            }*/
-
+            }
         }
 
-        //Se llama en cada frame. Se debe escribir toda la lógica de computo del modelo, así como también verificar entradas del usuario y reacciones ante ellas.
+        //Se llama en cada frame. Se debe escribir toda la lÃ³gica de computo del modelo, asÃ­ como tambiÃ©n verificar entradas del usuario y reacciones ante ellas.
         public override void Update(){
             PreUpdate();
             detectUserInput();
         }
         ///Se llama cada vez que hay que refrescar la pantalla.
         public override void Render() {
-            PreRender(); //Inicio el render de la escena, para ejemplos simples. Cuando tenemos postprocesado o shaders es mejor realizar las operaciones según nuestra conveniencia.
+            PreRender(); //Inicio el render de la escena, para ejemplos simples. Cuando tenemos postprocesado o shaders es mejor realizar las operaciones segÃºn nuestra conveniencia.
 
             DrawText.drawText("Camera pos: " + Core.Utils.TgcParserUtils.printVector3(Camara.Position), 5, 20, System.Drawing.Color.Red);
             DrawText.drawText("Camera LookAt: " + Core.Utils.TgcParserUtils.printVector3(Camara.LookAt), 5, 40, System.Drawing.Color.Red);
@@ -73,7 +73,7 @@ namespace TGC.Group.Model{
 
             PostRender();//Finaliza el render y presenta en pantalla, al igual que el preRender se debe para casos puntuales es mejor utilizar a mano las operaciones de EndScene y PresentScene
         }
-        ///Se llama cuando termina la ejecución del ejemplo. Hacer Dispose() de todos los objetos creados. Es muy importante liberar los recursos, sobretodo los gráficos ya que quedan bloqueados en el device de video.
+        ///Se llama cuando termina la ejecuciÃ³n del ejemplo. Hacer Dispose() de todos los objetos creados. Es muy importante liberar los recursos, sobretodo los grÃ¡ficos ya que quedan bloqueados en el device de video.
         public override void Dispose(){
             foreach (Mapa mapa in mapas){
                 mapa.dispose();
