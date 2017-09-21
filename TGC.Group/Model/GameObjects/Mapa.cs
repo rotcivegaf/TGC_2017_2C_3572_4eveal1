@@ -51,19 +51,19 @@ namespace TGC.Group.Model.GameObjects{
             createHeightMapMesh(Device, currentHeightmap);
             
             ObjectCreator creador = new ObjectCreator(this);
-            ObjetosMesh.AddRange(creador.createObjects(100, "Meshes\\Pino\\Pino-TgcScene.xml", 2, xIni, zIni));
-            ObjetosMesh.AddRange(creador.createObjects(100, "Meshes\\Pasto\\Pasto-TgcScene.xml", 0, xIni, zIni));
-            ObjetosMesh.AddRange(creador.createObjects(100, "Meshes\\Roca\\Roca-TgcScene.xml", 3, xIni, zIni));
+            ObjetosMesh.AddRange(creador.createObjects(50, "Meshes\\Pino\\Pino-TgcScene.xml", 2, xIni, zIni));
+            ObjetosMesh.AddRange(creador.createObjects(50, "Meshes\\Pasto\\Pasto-TgcScene.xml", 0, xIni, zIni));
+            ObjetosMesh.AddRange(creador.createObjects(50, "Meshes\\Roca\\Roca-TgcScene.xml", 3, xIni, zIni));
         }
 
         public float getY(float posX, float posZ, Vector3 moveVector) {
-            int xF = (int)Math.Floor(posX / 8);
-            int zF = (int)Math.Floor(posZ / 8);
+            //int xF = (int)Math.Floor(posX / 8);
+            //int zF = (int)Math.Floor(posZ / 8);
 
             //int y1 = heightmap[(int)x, (int)z];
 
             //return (y1 * scaleY) + 15;
-
+/*
             float p1 = heightmap[xF  , zF  ];
             float p2 = heightmap[xF+1, zF  ];
             float p3 = heightmap[xF  , zF+1];
@@ -77,16 +77,16 @@ namespace TGC.Group.Model.GameObjects{
             }
             if (moveVector.Z == 0) {
                 absZ = 1f;
-            }
-            float a = (float)((moveVector.X / absX) * (posX-Math.Truncate(posX)));
+            }*/
+            //float a = (float)((moveVector.X / absX) * (posX-Math.Truncate(posX)));
 
 
             //float a = (float)(((() )) * (((moveVector.Z / absZ)) - Math.Truncate(posZ)));
             
-            float deltaY = a * (p1-p4);
+            //float deltaY = a * (p1-p4);
 
 
-            float y = heightmap[(int)posX/8, (int)posZ/8] + deltaY;
+            float y = heightmap[(int)posX/8, (int)posZ/8];
 
             //(p1 +  * (p1 - p2))
               //  + (((float)(posX - Math.Truncate(posX))) * (p1 - p3));
