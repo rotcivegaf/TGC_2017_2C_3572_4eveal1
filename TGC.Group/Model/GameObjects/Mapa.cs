@@ -207,7 +207,7 @@ namespace TGC.Group.Model.GameObjects{
 
             //Render terrain
             D3DDevice.Instance.Device.SetTexture(0, terrainTexture);
-            D3DDevice.Instance.Device.SetTexture(1, null);
+            //D3DDevice.Instance.Device.SetTexture(1, null); ???
             D3DDevice.Instance.Device.Material = D3DDevice.DEFAULT_MATERIAL;
 
             D3DDevice.Instance.Device.VertexFormat = CustomVertex.PositionTextured.Format;

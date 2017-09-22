@@ -32,9 +32,9 @@ namespace TGC.Group.Model{
         public override void Init(){
             crearMapas();
             if (formPrincipal.Mode == 0){
-                var posZ = mapaActual.xIni + 3000;
-                var posX = mapaActual.zIni + 3000;
-                Camara = new FPCamera(new Vector3(posX, 200f, posZ), 10f, 500f, Input, mapaActual);
+                var posZ = 3000;// mapaActual.xIni + 3000;
+                var posX = 3000;// mapaActual.zIni + 3000;
+                Camara = new FPCamera(new Vector3(posX, 200f, posZ), 30f, 500f, Input, mapaActual);
             } else{
                 Camara = new TgcFpsCamera(new Vector3(2 * 4096, 200f, 2 * 4096), 500f, 500f, Input);
             }
@@ -47,12 +47,9 @@ namespace TGC.Group.Model{
                 for (int j = 0; j <= 4; j++){
                     mapa = new Mapa(MediaDir, (i * 4096), j * 4096);
                     mapas.Add(mapa);
-                    
-                    if (i==2 && j==2){//chanchada para obtener el mapa central, no tengo para perobarlo...
-                        mapaActual = mapa;
-                    }
                 }
             }
+            mapaActual = mapas[8];
         }
 
         //Se llama en cada frame. Se debe escribir toda la lógica de computo del modelo, así como también verificar entradas del usuario y reacciones ante ellas.
