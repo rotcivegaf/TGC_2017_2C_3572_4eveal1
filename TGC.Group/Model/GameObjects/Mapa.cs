@@ -15,105 +15,108 @@ using System.Text;
 using System.Threading.Tasks;
 using TGC.Core.SceneLoader;
 using TGC.Core.Geometry;
+using TGC.Core.Terrain;
 
 namespace TGC.Group.Model.GameObjects{
     public class Mapa {
-        public List<TgcMesh> ObjetosMesh = new List<TgcMesh>();
-        public TgcSceneLoader Loader;
-        private Microsoft.DirectX.Direct3D.Device Device;
+        public TgcSkyBox SkyBox { get; set; }
 
-        public float scaleXZ = 8f;
-        public float scaleY = 1f;
-        public int xIni;
-        public int zIni;
+        public Vector2 center;
+        public TgcSceneLoader Loader;
+        public Microsoft.DirectX.Direct3D.Device Device;
+
+        public Sector[] sectores;
+
+        public float scaleXZ = 16f;
+        public float scaleY = 0.4f;
+        public float deltaCenter;
 
         public int[,] heightmap;
+        public float length;
 
         public Texture terrainTexture;
         public String MediaDir;
 
-        private int totalVertices;
-        private VertexBuffer vbTerrain;
+        public int totalVertices;
 
-        public Mapa(String mediaDir, int _xIni, int _zIni) {
+        public Mapa(String mediaDir) {
             Device = D3DDevice.Instance.Device;//Device de DirectX para crear primitivas.
             Loader = new TgcSceneLoader();
-            xIni = _xIni;
-            zIni = _zIni;
 
             MediaDir = mediaDir;
-
             //Path de Heightmap default del terreno y Modifier para cambiarla
-            var currentHeightmap = MediaDir + "mapa.jpg";
+            var currentHeightmap = MediaDir + "b.jpg";
             var currentTexture = MediaDir + "2.jpg";
             terrainTexture = loadTerrainTexture(Device, currentTexture);
+            heightmap = loadHeightMap(currentHeightmap);
+            totalVertices = 2 * 3 * heightmap.GetLength(0) * heightmap.GetLength(1);
 
-            createHeightMapMesh(Device, currentHeightmap);
-            
-            ObjectCreator creador = new ObjectCreator(this);
-            ObjetosMesh.AddRange(creador.createObjects(50, "Meshes\\Pino\\Pino-TgcScene.xml", 2, xIni, zIni));
-            ObjetosMesh.AddRange(creador.createObjects(50, "Meshes\\Pasto\\Pasto-TgcScene.xml", 0, xIni, zIni));
-            ObjetosMesh.AddRange(creador.createObjects(50, "Meshes\\Roca\\Roca-TgcScene.xml", 3, xIni, zIni));
+            length = heightmap.GetLength(0) * scaleXZ;
+
+            crearSectores();
+           
+            var aux = (1.5f) * length;
+            center = new Vector2(aux, aux);
+            deltaCenter = length / 2;
+
+            CreateSkyBox();
         }
 
-        public float getY(float posX, float posZ, Vector3 moveVector) {
-            //int xF = (int)Math.Floor(posX / 8);
-            //int zF = (int)Math.Floor(posZ / 8);
-
-            //int y1 = heightmap[(int)x, (int)z];
-
-            //return (y1 * scaleY) + 15;
-/*
-            float p1 = heightmap[xF  , zF  ];
-            float p2 = heightmap[xF+1, zF  ];
-            float p3 = heightmap[xF  , zF+1];
-            float p4 = heightmap[xF+1, zF+1];
-
-            float absX = Math.Abs(moveVector.X);
-            float absZ = Math.Abs(moveVector.Z); 
-
-            if (moveVector.X == 0) {
-                absX = 0.5f;
-            }
-            if (moveVector.Z == 0) {
-                absZ = 1f;
-            }*/
-            //float a = (float)((moveVector.X / absX) * (posX-Math.Truncate(posX)));
-
-
-            //float a = (float)(((() )) * (((moveVector.Z / absZ)) - Math.Truncate(posZ)));
+        private void CreateSkyBox() {
+            //Crear SkyBox
+            SkyBox = new TgcSkyBox();
+            SkyBox.Center = new Vector3(center.X/2, 0, center.Y/2);
             
-            //float deltaY = a * (p1-p4);
+            SkyBox.Size = new Vector3(length*1.5f, length*3, length*1.5f);
 
+            var texturesPath = MediaDir + "\\SkyBox\\";
+            String imgNameRoot = "clouds";
+            String imgExtension = "png";
+            //Configurar las texturas para cada una de las 6 caras
+            SkyBox.setFaceTexture(TgcSkyBox.SkyFaces.Up, texturesPath + imgNameRoot + "_up." + imgExtension);
+            SkyBox.setFaceTexture(TgcSkyBox.SkyFaces.Down, texturesPath + imgNameRoot + "_dn." + imgExtension);
+            SkyBox.setFaceTexture(TgcSkyBox.SkyFaces.Left, texturesPath + imgNameRoot + "_lf." + imgExtension);
+            SkyBox.setFaceTexture(TgcSkyBox.SkyFaces.Right, texturesPath + imgNameRoot + "_rt." + imgExtension);
+            //Hay veces es necesario invertir las texturas Front y Back si se pasa de un sistema RightHanded a uno LeftHanded
+            SkyBox.setFaceTexture(TgcSkyBox.SkyFaces.Front, texturesPath + imgNameRoot + "_bk." + imgExtension);
+            SkyBox.setFaceTexture(TgcSkyBox.SkyFaces.Back, texturesPath + imgNameRoot + "_ft." + imgExtension);
+            SkyBox.SkyEpsilon = 25f;
+            //Inicializa todos los valores para crear el SkyBox
+            SkyBox.Init();
+        }
 
-            float y = heightmap[(int)posX/8, (int)posZ/8];
+        public void crearSectores() {
+            ObjectCreator creador = new ObjectCreator(this);
+            sectores = new Sector[9];
 
-            //(p1 +  * (p1 - p2))
-              //  + (((float)(posX - Math.Truncate(posX))) * (p1 - p3));
-            return (y * scaleY) + 15;
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    sectores[i * 3 + j] = new Sector(new Vector2(i, j), this);
+                    sectores[i * 3 + j].crearObj(creador);
+                }
+            }
 
+            List<Sector> tmpS = new List<Sector>(sectores);
+        }
 
+        public float getY(float posX, float posZ) {
+            posX = Math.Abs(posX) % ((heightmap.GetLength(0) - 1) * scaleXZ);
+            posZ = Math.Abs(posZ) % ((heightmap.GetLength(0) - 1) * scaleXZ);
+            
+            int posU = (int)(posX / scaleXZ);
+            int posV = (int)(posZ / scaleXZ);
 
-            //float x = posX/8;
-            //float z = posZ/8;
-            /* int y11 = heightmap[(int)x - 1, (int)z - 1];
-            int y12 = heightmap[(int)x - 1, (int)z];
-            int y13 = heightmap[(int)x - 1, (int)z + 1];
-            int y21 = heightmap[(int)x, (int)z - 1];
-            int y22 = heightmap[(int)x, (int)z];
-            int y23 = heightmap[(int)x, (int)z + 1];
-            int y31 = heightmap[(int)x + 1, (int)z - 1];
-            int y32 = heightmap[(int)x + 1, (int)z];
-            int y33 = heightmap[(int)x + 1, (int)z + 1];
-            */
-            //int y1 = heightmap[, (int)Math.Floor(z)];
-            //int y2 = heightmap[(int)Math.Ceiling(x), (int)Math.Ceiling(z)];
-            //float y = (float) y2 + (float) y1 * (float) (Math.Abs(x - z) - Math.Floor(Math.Abs(x - z)));
-            /*
-            // int y = heightmap[(int)x, (int)z];
-            x x x
-            x x x
-            x x x*/
+            float decimalU = (posX / scaleXZ) - posU;
+            float decimalV = (posZ / scaleXZ) - posV;
+
+            float v0 = heightmap[posU, posV] * scaleY;
+            float v1 = heightmap[posU + 1, posV] * scaleY;
+            float v2 = heightmap[posU, posV + 1] * scaleY;
+
+            float deltaX = (v1 - v0) * decimalU;
+            float deltaZ = (v2 - v0) * decimalV;
+
+            return v0 + deltaX + deltaZ + 20;
         }
 
         private Texture loadTerrainTexture(Microsoft.DirectX.Direct3D.Device d3dDevice, string path) {
@@ -122,110 +125,89 @@ namespace TGC.Group.Model.GameObjects{
             b.RotateFlip(RotateFlipType.Rotate90FlipX);
             return Texture.FromBitmap(d3dDevice, b, Usage.None, Pool.Managed);
         }
-
+        
         private int[,] loadHeightMap(string path) {
             //Cargar bitmap desde el FileSystem
             var bitmap = (Bitmap)Image.FromFile(path);
-            var width = bitmap.Size.Width+1;
-            var height = bitmap.Size.Height+1;
+            var width = bitmap.Size.Width + 1;
+            var height = bitmap.Size.Height + 1;
             var heightmap = new int[width, height];
             var i = 0;
             var j = 0;
-            for (i = 0; i < width-1; i++) {
-                for (j = 0; j < height-1; j++) {
+            for (i = 0; i < width - 1; i++) {
+                for (j = 0; j < height - 1; j++) {
                     //Obtener color
                     var pixel = bitmap.GetPixel(j, i);//(j, i) invertido para primero barrer filas y despues columnas
                     //Calcular intensidad en escala de grises
                     var intensity = pixel.R * 0.299f + pixel.G * 0.587f + pixel.B * 0.114f;
-                    heightmap[i, j] = (int)intensity;   
+                    heightmap[i, j] = (int)intensity;
                 }
             }
-            for (i = 0; i < width; i++){
-                heightmap[i, width-1] = heightmap[i, 0];
+            for (i = 0; i < width; i++) {
+                heightmap[i, width - 1] = heightmap[i, 0];
             }
-            for (i = 0; i < width; i++){
-                heightmap[width-1, i] = heightmap[0, i];
+            for (i = 0; i < width; i++) {
+                heightmap[width - 1, i] = heightmap[0, i];
             }
-            
+
             return heightmap;
         }
-        private Vector3 crearVertice(int i, int j){
-            return new Vector3((i * scaleXZ) + xIni, heightmap[i, j] * scaleY, (j * scaleXZ) + zIni);
-        }
-        
-        private Vector2 crearTextura(int u, int v){
-            return new Vector2(u / (float)32, v / (float)32);
-        }
 
-        private void createHeightMapMesh(Microsoft.DirectX.Direct3D.Device d3dDevice, string path) {
-            //parsear bitmap y cargar matriz de alturas
-            heightmap = loadHeightMap(path);
-
-            //Crear vertexBuffer
-            totalVertices = 2 * 3 * heightmap.GetLength(0) * heightmap.GetLength(1);
-            vbTerrain = new VertexBuffer(typeof(CustomVertex.PositionTextured), totalVertices, d3dDevice,
-                Usage.Dynamic | Usage.WriteOnly, CustomVertex.PositionTextured.Format, Pool.Default);
-
-            //Crear array temporal de vertices
-            var dataIdx = 0;
-            var data = new CustomVertex.PositionTextured[totalVertices]; 
-            //Iterar sobre toda la matriz del Heightmap y crear los triangulos necesarios para el terreno
-            for (var i = 0; i < heightmap.GetLength(0)-1; i++) {
-                for (var j = 0; j < heightmap.GetLength(1)-1; j++) {
-                    //Crear los cuatro vertices que conforman este cuadrante, aplicando la escala correspondiente
-                    var v1 = crearVertice(i, j);
-                    var v2 = crearVertice(i, j + 1);
-                    var v3 = crearVertice(i + 1, j);
-                    var v4 = crearVertice(i + 1, j + 1);
-
-                    //Crear las coordenadas de textura para los cuatro vertices del cuadrante
-                    var t1 = crearTextura(i, j);
-                    var t2 = crearTextura(i, j + 1);
-                    var t3 = crearTextura(i + 1, j);
-                    var t4 = crearTextura(i + 1, j + 1);
-
-                    //Cargar triangulo 1
-                    data[dataIdx] = new CustomVertex.PositionTextured(v1, t1.X, t1.Y);
-                    data[dataIdx + 1] = new CustomVertex.PositionTextured(v2, t2.X, t2.Y);
-                    data[dataIdx + 2] = new CustomVertex.PositionTextured(v4, t4.X, t4.Y);
-
-                    //Cargar triangulo 2
-                    data[dataIdx + 3] = new CustomVertex.PositionTextured(v1, t1.X, t1.Y);
-                    data[dataIdx + 4] = new CustomVertex.PositionTextured(v4, t4.X, t4.Y);
-                    data[dataIdx + 5] = new CustomVertex.PositionTextured(v3, t3.X, t3.Y);
-
-                    dataIdx += 6;
-                }
-            }
-
-            //Llenar todo el VertexBuffer con el array temporal
-            vbTerrain.SetData(data, 0, LockFlags.None);
-        }
-
-        public void render(){
+        public void render() {
             D3DDevice.Instance.Device.Transform.World = Matrix.Identity;
+            SkyBox.render();
+        }
 
-            //Render terrain
-            D3DDevice.Instance.Device.SetTexture(0, terrainTexture);
-            //D3DDevice.Instance.Device.SetTexture(1, null); ???
-            D3DDevice.Instance.Device.Material = D3DDevice.DEFAULT_MATERIAL;
+        public void moverSectores(int dir) {
+            var delta = (heightmap.GetLength(0) - 1) * scaleXZ * 3;
+            var deltaX = delta;
+            var deltaY = delta;
+            int[] s = null;
+            int[] np = null;
 
-            D3DDevice.Instance.Device.VertexFormat = CustomVertex.PositionTextured.Format;
-            D3DDevice.Instance.Device.SetStreamSource(0, vbTerrain, 0);
-            D3DDevice.Instance.Device.DrawPrimitives(PrimitiveType.TriangleList, 0, totalVertices / 3);
+            switch (dir) {
+                case 0:
+                    deltaY = 0;
+                    s = new int[3] { 0, 1, 2 };
+                    np = new int[9] { 3, 4, 5, 6, 7, 8, 0, 1, 2 };
+                    break;
+                case 1:
+                    deltaX *= -1;
+                    deltaY = 0;
+                    s = new int[3] { 6, 7, 8 };
+                    np = new int[9] { 6, 7, 8, 0, 1, 2, 3, 4, 5 };
+                    break;
+                case 2:
+                    deltaX = 0;
+                    s = new int[3] { 0, 3, 6 };
+                    np = new int[9] { 1, 2, 0, 4, 5, 3, 7, 8, 6 };
+                    break;
+                case 3:
+                    deltaX = 0;
+                    deltaY *= -1;
+                    s = new int[3] { 2, 5, 8 };
+                    np = new int[9] { 2, 0, 1, 5, 3, 4, 8, 6, 7 };
+                    break;
+            }
+            center += new Vector2(deltaX / 3, deltaY / 3);
+            sectores[s[0]].mover(deltaX, deltaY);
+            sectores[s[1]].mover(deltaX, deltaY);
+            sectores[s[2]].mover(deltaX, deltaY);
+            acomodarNumeroSectores(np);
+        }
 
-            foreach (TgcMesh mesh in ObjetosMesh){
-                mesh.render();
+        public void acomodarNumeroSectores(int[] newPos) {
+            List<Sector> tmpS = new List<Sector>(sectores);
+
+            for (int i = 0; i < newPos.Length; i++) {
+                sectores[i] = tmpS[newPos[i]];
+                sectores[i].numero = new Vector2((int)i / 3,  i % 3 );
             }
         }
 
         public void dispose(){
-            vbTerrain.Dispose();
-            terrainTexture.Dispose();
-
-            foreach (TgcMesh mesh in ObjetosMesh){
-                mesh.dispose();
-            }
+            for(int i = 0; i < sectores.Length; i++)
+                sectores[i].dispose();
         }
     }
 }

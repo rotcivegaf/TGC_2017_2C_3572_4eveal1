@@ -26,8 +26,7 @@ namespace TGC.Group.Form{
             InitRenderLoop();//Inicio el ciclo de Render.
             this.inventarioForm.Visible = false;
 
-
-/*
+            
             this.button_quit.Visible = false;
             this.button_play.Visible = false;
             this.button_mode.Visible = false;
@@ -36,7 +35,7 @@ namespace TGC.Group.Form{
             Text = Modelo.Name + " - " + Modelo.Description;//Titulo de la ventana principal.
             panel3D.Focus();//Focus panel3D.
             InitRenderLoop();//Inicio el ciclo de Render.
-*/
+
 
         }
 

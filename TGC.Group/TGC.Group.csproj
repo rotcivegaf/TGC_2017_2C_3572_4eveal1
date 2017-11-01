@@ -94,6 +94,8 @@
     <Compile Include="Model\GameObjects\Mapa.cs" />
     <Compile Include="Model\GameObjects\ObjectCreator.cs" />
     <Compile Include="Model\GameObjects\Personaje.cs" />
+    <Compile Include="Model\GameObjects\Sector.cs" />
+    <Compile Include="Model\Optimizacion\Optimizador.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form\GameForm.resx">

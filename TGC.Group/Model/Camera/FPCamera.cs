@@ -15,8 +15,6 @@ using TGC.Group.Model.GameObjects;
 
 namespace TGC.Group.Model.Camera{
     class FPCamera : TgcCamera{
-        public Mapa mapaActual;
-
         private readonly Point mouseCenter; //Centro de mause 2D para ocultarlo.
         private Matrix cameraRotation;//Se mantiene la matriz rotacion para no hacer este calculo cada vez.
         private Vector3 directionView;//Direction view se calcula a partir de donde se quiere ver con la camara inicialmente. por defecto se ve en -Z.
@@ -24,12 +22,14 @@ namespace TGC.Group.Model.Camera{
         private float updownRot;
         private bool lockCam;
         private Vector3 positionEye;
+        public Mapa mapa;
+
         private TgcD3dInput Input { get; }
         public float MovementSpeed { get; set; }
         public float RotationSpeed { get; set; }
         public float JumpSpeed { get; set; }
 
-        public FPCamera(TgcD3dInput input) {
+        public FPCamera(Vector3 positionEye, float moveSpeed, float jumpSpeed, TgcD3dInput input, Mapa mapa) {
             Input = input;
             mouseCenter = new Point(D3DDevice.Instance.Device.Viewport.Width / 2, D3DDevice.Instance.Device.Viewport.Height / 2);
             RotationSpeed = 0.02f;
@@ -39,21 +39,11 @@ namespace TGC.Group.Model.Camera{
             cameraRotation = Matrix.RotationX(updownRot) * Matrix.RotationY(leftrightRot);
             this.lockCam = true;
             Cursor.Hide();
-        }
 
-        public FPCamera(Vector3 positionEye, TgcD3dInput input) : this(input) {
-            this.positionEye = positionEye;
-        }
-
-        public FPCamera(Vector3 positionEye, float moveSpeed, float jumpSpeed, TgcD3dInput input, Mapa mapaActual) : this(positionEye, input) {
             MovementSpeed = moveSpeed;
             JumpSpeed = jumpSpeed;
-            this.mapaActual = mapaActual;
-            positionEye = new Vector3(0, mapaActual.getY(positionEye.X, positionEye.Z, new Vector3(0,0,0)), 0);
-        }
-
-        public FPCamera(Vector3 positionEye, float moveSpeed, float jumpSpeed, float rotationSpeed, TgcD3dInput input, Mapa mapaActual) : this(positionEye, moveSpeed, jumpSpeed, input, mapaActual) {
-            RotationSpeed = rotationSpeed;
+            this.positionEye = positionEye;
+            this.mapa = mapa;
         }
 
         public bool LockCam {
@@ -76,6 +66,10 @@ namespace TGC.Group.Model.Camera{
 
         public override void UpdateCamera(float elapsedTime) {
             var moveVector = new Vector3(0, 0, 0);
+            //Forward
+            if (Input.keyDown(Key.RightShift)) {
+                MovementSpeed = 50;
+            }
             //Forward
             if (Input.keyDown(Key.W)) {
                 moveVector += new Vector3(0, 0, -1) * MovementSpeed;
@@ -122,22 +116,15 @@ namespace TGC.Group.Model.Camera{
                 Cursor.Position = mouseCenter;
 
             //aca esta la papa
-            var posY = mapaActual.getY(positionEye.X, positionEye.Z, moveVector);
+            var posY = mapa.getY(positionEye.X, positionEye.Z) + 20;
 
             if (positionEye.Y != posY) {
-                positionEye.Y = posY;
+                positionEye.Y = (float)posY;
             }
 
             //Calculamos la nueva posicion del ojo segun la rotacion actual de la camara.
             var cameraRotatedPositionEye = Vector3.TransformNormal(moveVector * elapsedTime, cameraRotation);
             positionEye += cameraRotatedPositionEye;
-
-
-            
-
-
-            
-
 
             //Calculamos el target de la camara, segun su direccion inicial y las rotaciones en screen space x,y.
             var cameraRotatedTarget = Vector3.TransformNormal(directionView, cameraRotation);
