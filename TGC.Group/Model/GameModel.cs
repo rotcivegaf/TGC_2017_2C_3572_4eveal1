@@ -15,12 +15,15 @@ using TGC.Group.Model.GameObjects;
 using TGC.Group.Model.Camera;
 using TGC.Group.Form;
 using TGC.Group.Model.Optimizacion;
+using TGC.Group.Model.GameObject;
 
 namespace TGC.Group.Model{
     public class GameModel : TgcExample{
         public Mapa mapa;
         public Optimizador optimizador;
+        public Personaje personaje; 
         GameForm formPrincipal;
+        public FPCamera miCamara;
 
         public GameModel(string mediaDir, string shadersDir, GameForm form) : base(mediaDir, shadersDir){
             Category = Game.Default.Category;
@@ -31,25 +34,27 @@ namespace TGC.Group.Model{
         
         ///Se llama una sola vez, al principio cuando se ejecuta el ejemplo. Escribir aquí todo el código de inicialización: cargar modelos, texturas, estructuras de optimización, todo procesamiento que podemos pre calcular para nuestro juego.
         public override void Init(){
+            personaje = new Personaje();
             mapa = new Mapa(MediaDir);
 
             var posX = mapa.center.X;
             var posZ = mapa.center.Y;
-            Camara = new FPCamera(new Vector3(posX, mapa.getY(posX, posZ), posZ), 200f, 500f, Input, mapa);
-            optimizador = new Optimizador(mapa, Camara);
+            miCamara = new FPCamera(new Vector3(posX, mapa.getY(posX, posZ), posZ), 60f, 500f, Input, mapa, personaje);
+            Camara = miCamara;
+            optimizador = new Optimizador(mapa, miCamara);
         }
 
         private void moverMapas() {
-            if (Camara.Position.X > mapa.center.X + mapa.deltaCenter) {// izquierda
+            if (miCamara.Position.X > mapa.center.X + mapa.deltaCenter) {// izquierda
                 mapa.moverSectores(0);
             } else {
-                if (Camara.Position.X < mapa.center.X - mapa.deltaCenter) {// derecha
+                if (miCamara.Position.X < mapa.center.X - mapa.deltaCenter) {// derecha
                     mapa.moverSectores(1);
                 } else {
-                    if (Camara.Position.Z > mapa.center.Y + mapa.deltaCenter) {// abajo
+                    if (miCamara.Position.Z > mapa.center.Y + mapa.deltaCenter) {// abajo
                         mapa.moverSectores(2);
                     } else {
-                        if (Camara.Position.Z < mapa.center.Y - mapa.deltaCenter) {// arriba
+                        if (miCamara.Position.Z < mapa.center.Y - mapa.deltaCenter) {// arriba
                             mapa.moverSectores(3);
                         }
                     }
@@ -63,20 +68,22 @@ namespace TGC.Group.Model{
             PreUpdate();
 
             moverMapas();
-            
+            mapa.testCollisions(miCamara, personaje);
+
             detectUserInput();
         }
         ///Se llama cada vez que hay que refrescar la pantalla.
         public override void Render() {
             PreRender(); //Inicio el render de la escena, para ejemplos simples. Cuando tenemos postprocesado o shaders es mejor realizar las operaciones según nuestra conveniencia.
 
-            DrawText.drawText("Camera pos: " + Core.Utils.TgcParserUtils.printVector3(Camara.Position), 15, 20, System.Drawing.Color.Red);
-            DrawText.drawText("Camera LookAt: " + Core.Utils.TgcParserUtils.printVector3(Camara.LookAt - Camara.Position), 15, 40, System.Drawing.Color.Red);
-            DrawText.drawText("" + mapa.heightmap.GetLength(0), 15, 60, System.Drawing.Color.Red);
+            DrawText.drawText("Camera pos: " + Core.Utils.TgcParserUtils.printVector3(miCamara.Position), 15, 20, System.Drawing.Color.Red);
+            DrawText.drawText("Camera LookAt: " + Core.Utils.TgcParserUtils.printVector3(miCamara.LookAt - miCamara.Position), 15, 40, System.Drawing.Color.Red);
+            DrawText.drawText("" + miCamara.Collisioned, 15, 60, System.Drawing.Color.Red);
 
             optimizador.renderMap();
 
-            mapa.SkyBox.Center = Camara.Position + new Vector3(-mapa.SkyBox.Size.X / 2, 0, -mapa.SkyBox.Size.Z / 2);
+            mapa.SkyBox.Center = miCamara.Position + new Vector3(-mapa.SkyBox.Size.X / 2, 0, -mapa.SkyBox.Size.Z / 2);
+            miCamara.CameraBox.BoundingBox.render();
 
             PostRender();//Finaliza el render y presenta en pantalla, al igual que el preRender se debe para casos puntuales es mejor utilizar a mano las operaciones de EndScene y PresentScene
         }

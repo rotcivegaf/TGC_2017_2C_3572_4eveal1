@@ -16,6 +16,9 @@ using System.Threading.Tasks;
 using TGC.Core.SceneLoader;
 using TGC.Core.Geometry;
 using TGC.Core.Terrain;
+using TGC.Core.Collision;
+using TGC.Group.Model.Camera;
+using TGC.Group.Model.GameObject;
 
 namespace TGC.Group.Model.GameObjects{
     public class Mapa {
@@ -116,7 +119,7 @@ namespace TGC.Group.Model.GameObjects{
             float deltaX = (v1 - v0) * decimalU;
             float deltaZ = (v2 - v0) * decimalV;
 
-            return v0 + deltaX + deltaZ + 20;
+            return v0 + deltaX + deltaZ + 10;
         }
 
         private Texture loadTerrainTexture(Microsoft.DirectX.Direct3D.Device d3dDevice, string path) {
@@ -202,6 +205,20 @@ namespace TGC.Group.Model.GameObjects{
             for (int i = 0; i < newPos.Length; i++) {
                 sectores[i] = tmpS[newPos[i]];
                 sectores[i].numero = new Vector2((int)i / 3,  i % 3 );
+            }
+        }
+
+        public void testCollisions(FPCamera camara, Personaje personaje) {
+            if (personaje.isMoving) {
+                foreach (TgcMesh mesh in sectores[4].ObjetosMesh) {
+                    camara.CameraBox.Position = camara.Position;
+                    if (TgcCollisionUtils.testAABBAABB(camara.CameraBox.BoundingBox, mesh.BoundingBox)) {
+                        camara.Collisioned = true;
+                        return;
+                    } else {
+                        camara.Collisioned = false;
+                    }
+                }
             }
         }
 

@@ -75,9 +75,9 @@ namespace TGC.Group.Model.GameObjects {
         }
 
         public void crearObj(ObjectCreator creador) {
-            ObjetosMesh.AddRange(creador.createObjects(25, "Meshes\\Pino\\Pino-TgcScene.xml", 4, numero.X * mapa.length, numero.Y * mapa.length));
-            ObjetosMesh.AddRange(creador.createObjects(25, "Meshes\\Pasto\\Pasto-TgcScene.xml", 1, numero.X * mapa.length, numero.Y * mapa.length));
-            ObjetosMesh.AddRange(creador.createObjects(25, "Meshes\\Roca\\Roca-TgcScene.xml", 4, numero.X * mapa.length, numero.Y * mapa.length));
+            ObjetosMesh.AddRange(creador.createObjects(25, "Meshes\\Pino\\Pino-TgcScene.xml", 5, numero.X * mapa.length, numero.Y * mapa.length, false));
+            ObjetosMesh.AddRange(creador.createObjects(25, "Meshes\\Pasto\\Pasto-TgcScene.xml", 2, numero.X * mapa.length, numero.Y * mapa.length, true));
+            ObjetosMesh.AddRange(creador.createObjects(25, "Meshes\\Roca\\Roca-TgcScene.xml", 10, numero.X * mapa.length, numero.Y * mapa.length, false));
         }
 
         public void mover(float x, float z) {
@@ -102,6 +102,7 @@ namespace TGC.Group.Model.GameObjects {
 
             foreach (TgcMesh mesh in ObjetosMesh) {
                 mesh.render();
+                mesh.BoundingBox.render();
             }
         }
 

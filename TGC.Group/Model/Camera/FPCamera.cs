@@ -12,9 +12,11 @@ using TGC.Core.Utils;
 using System.Windows.Forms;
 using Microsoft.DirectX.DirectInput;
 using TGC.Group.Model.GameObjects;
+using TGC.Group.Model.GameObject;
+using TGC.Core.Geometry;
 
 namespace TGC.Group.Model.Camera{
-    class FPCamera : TgcCamera{
+    public class FPCamera : TgcCamera{
         private readonly Point mouseCenter; //Centro de mause 2D para ocultarlo.
         private Matrix cameraRotation;//Se mantiene la matriz rotacion para no hacer este calculo cada vez.
         private Vector3 directionView;//Direction view se calcula a partir de donde se quiere ver con la camara inicialmente. por defecto se ve en -Z.
@@ -23,13 +25,18 @@ namespace TGC.Group.Model.Camera{
         private bool lockCam;
         private Vector3 positionEye;
         public Mapa mapa;
+        public Personaje personaje;
+        public Key lastKey;
 
         private TgcD3dInput Input { get; }
         public float MovementSpeed { get; set; }
         public float RotationSpeed { get; set; }
         public float JumpSpeed { get; set; }
+        public TgcBox CameraBox { get; set; } = TgcBox.fromExtremes(new Vector3(0, 0, 0), new Vector3(2, 2, 2));
+        public bool Collisioned { get; set; } = false;
 
-        public FPCamera(Vector3 positionEye, float moveSpeed, float jumpSpeed, TgcD3dInput input, Mapa mapa) {
+        public FPCamera(Vector3 positionEye, float moveSpeed, float jumpSpeed, TgcD3dInput input, Mapa mapa, Personaje personaje) {
+            this.personaje = personaje;
             Input = input;
             mouseCenter = new Point(D3DDevice.Instance.Device.Viewport.Width / 2, D3DDevice.Instance.Device.Viewport.Height / 2);
             RotationSpeed = 0.02f;
@@ -70,36 +77,32 @@ namespace TGC.Group.Model.Camera{
             if (Input.keyDown(Key.RightShift)) {
                 MovementSpeed = 50;
             }
-            //Forward
+
             if (Input.keyDown(Key.W)) {
-                moveVector += new Vector3(0, 0, -1) * MovementSpeed;
+                if (!(Collisioned && lastKey == Key.W)) {
+                    moveVector += new Vector3(0, 0, -1) * MovementSpeed;
+                    lastKey = Key.W;
+                }
             }
-
-            //Backward
             if (Input.keyDown(Key.S)) {
-                moveVector += new Vector3(0, 0, 1) * MovementSpeed;
+                if (!(Collisioned && lastKey == Key.S)) {
+                    moveVector += new Vector3(0, 0, 1) * MovementSpeed;
+                    lastKey = Key.S;
+                }
             }
-
-            //Strafe right
             if (Input.keyDown(Key.D)) {
-                moveVector += new Vector3(-1, 0, 0) * MovementSpeed;
+                if (!(Collisioned && lastKey == Key.D)) {
+                    moveVector += new Vector3(-1, 0, 0) * MovementSpeed;
+                    lastKey = Key.D;
+                }
             }
-
-            //Strafe left
             if (Input.keyDown(Key.A)) {
-                moveVector += new Vector3(1, 0, 0) * MovementSpeed;
+                if (!(Collisioned && lastKey == Key.A)) {
+                    moveVector += new Vector3(1, 0, 0) * MovementSpeed;
+                    lastKey = Key.A;
+                }
             }
-
-            //Jump
-            /*if (Input.keyDown(Key.Space)) {
-                moveVector += new Vector3(0, 1, 0) * JumpSpeed;
-            }*/
-
-            //Crouch
-            /*if (Input.keyDown(Key.LeftControl)) {
-                moveVector += new Vector3(0, -1, 0) * JumpSpeed;
-            }*/
-
+            
             if (Input.keyPressed(Key.L) || Input.keyPressed(Key.Escape)) {
                 LockCam = !lockCam;
             }
@@ -116,14 +119,20 @@ namespace TGC.Group.Model.Camera{
                 Cursor.Position = mouseCenter;
 
             //aca esta la papa
-            var posY = mapa.getY(positionEye.X, positionEye.Z) + 20;
+            var posY = mapa.getY(positionEye.X, positionEye.Z);
 
             if (positionEye.Y != posY) {
                 positionEye.Y = (float)posY;
             }
 
+            setPos(moveVector, elapsedTime);
+
+            personaje.isMoving = !(moveVector == new Vector3(0, 0, 0));
+        }
+
+        public void setPos(Vector3 pos, float elapsedTime) {
             //Calculamos la nueva posicion del ojo segun la rotacion actual de la camara.
-            var cameraRotatedPositionEye = Vector3.TransformNormal(moveVector * elapsedTime, cameraRotation);
+            var cameraRotatedPositionEye = Vector3.TransformNormal(pos * elapsedTime, cameraRotation);
             positionEye += cameraRotatedPositionEye;
 
             //Calculamos el target de la camara, segun su direccion inicial y las rotaciones en screen space x,y.

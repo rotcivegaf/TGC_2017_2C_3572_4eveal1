@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TGC.Core.SceneLoader;
+using TGC.Core.Geometry;
 
 namespace TGC.Group.Model.GameObjects {
     public class ObjectCreator {
@@ -32,7 +33,7 @@ namespace TGC.Group.Model.GameObjects {
             return new Vector3(scale, scale, scale);
         }
 
-        public List<TgcMesh> createObjects(int cantidad, String dir, float deltaY, float xIni, float zIni) {
+        public List<TgcMesh> createObjects(int cantidad, String dir, float deltaY, float xIni, float zIni, bool esSolido) {
             TgcMesh tree = mapa.Loader.loadSceneFromFile(mapa.MediaDir + dir).Meshes[0];
             List<TgcMesh> lista = new List<TgcMesh>();
             TgcMesh instance;
@@ -44,6 +45,8 @@ namespace TGC.Group.Model.GameObjects {
                 instance.Transform = Matrix.Scaling(instance.Scale) * Matrix.Translation(instance.Position);
                 instance.updateBoundingBox();
                 instance.AlphaBlendEnable = true;
+                if (esSolido)
+                    instance.BoundingBox = TgcBox.fromExtremes(new Vector3(0, 0, 0), new Vector3(0, 0, 0)).BoundingBox;
                 lista.Add(instance);
             }
             return lista;
