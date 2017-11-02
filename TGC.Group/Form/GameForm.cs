@@ -24,19 +24,11 @@ namespace TGC.Group.Form{
 
         private void GameForm_Load(object sender, EventArgs e){
             InitRenderLoop();//Inicio el ciclo de Render.
-            this.inventarioForm.Visible = false;
-
-            
-            this.button_quit.Visible = false;
-            this.button_play.Visible = false;
-            this.button_mode.Visible = false;
 
             InitGraphics();//Iniciar graficos.
             Text = Modelo.Name + " - " + Modelo.Description;//Titulo de la ventana principal.
             panel3D.Focus();//Focus panel3D.
             InitRenderLoop();//Inicio el ciclo de Render.
-
-
         }
 
         private void GameForm_FormClosing(object sender, FormClosingEventArgs e){
@@ -117,10 +109,6 @@ namespace TGC.Group.Form{
         }
 
         private void button_play_Click(object sender, EventArgs e){
-            this.button_quit.Visible = false;
-            this.button_play.Visible = false;
-            this.button_mode.Visible = false;
-
             InitGraphics();//Iniciar graficos.
             Text = Modelo.Name + " - " + Modelo.Description;//Titulo de la ventana principal.
             panel3D.Focus();//Focus panel3D.

@@ -33,13 +33,22 @@ namespace TGC.Group.Model.GameObjects {
             return new Vector3(scale, scale, scale);
         }
 
+        public TgcMesh dibujaBoton(Vector3 pos, String dir, Vector3 scala) {
+            TgcMesh boton = mapa.Loader.loadSceneFromFile(mapa.MediaDir + dir).Meshes[0];
+            boton.Scale = scala;
+            boton.Position = pos;
+            boton.Transform = Matrix.Scaling(boton.Scale) * Matrix.Translation(boton.Position);
+            boton.AlphaBlendEnable = true;
+            return boton;
+        }
+
         public List<TgcMesh> createObjects(int cantidad, String dir, float deltaY, float xIni, float zIni, bool esSolido) {
-            TgcMesh tree = mapa.Loader.loadSceneFromFile(mapa.MediaDir + dir).Meshes[0];
+            TgcMesh objeto = mapa.Loader.loadSceneFromFile(mapa.MediaDir + dir).Meshes[0];
             List<TgcMesh> lista = new List<TgcMesh>();
             TgcMesh instance;
 
             for (int i = 1; i <= cantidad; i++) {
-                instance = tree.createMeshInstance(tree.Name + "_" + i);
+                instance = objeto.createMeshInstance(objeto.Name + "_" + i);
                 instance.Scale = getRandomScaleVector();
                 instance.Position = getRandomPositionVector(deltaY, xIni, zIni);
                 instance.Transform = Matrix.Scaling(instance.Scale) * Matrix.Translation(instance.Position);

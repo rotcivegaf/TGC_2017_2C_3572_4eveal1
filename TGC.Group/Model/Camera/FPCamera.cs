@@ -72,6 +72,7 @@ namespace TGC.Group.Model.Camera{
         }
 
         public override void UpdateCamera(float elapsedTime) {
+            
             var moveVector = new Vector3(0, 0, 0);
             //Forward
             if (Input.keyDown(Key.RightShift)) {
@@ -106,7 +107,7 @@ namespace TGC.Group.Model.Camera{
             if (Input.keyPressed(Key.L) || Input.keyPressed(Key.Escape)) {
                 LockCam = !lockCam;
             }
-
+            
             //Solo rotar si se esta aprentando el boton izq del mouse
             if (lockCam || Input.buttonDown(TgcD3dInput.MouseButtons.BUTTON_LEFT)) {
                 leftrightRot -= -Input.XposRelative * RotationSpeed;
@@ -114,7 +115,7 @@ namespace TGC.Group.Model.Camera{
                 //Se actualiza matrix de rotacion, para no hacer este calculo cada vez y solo cuando en verdad es necesario.
                 cameraRotation = Matrix.RotationX(updownRot) * Matrix.RotationY(leftrightRot);
             }
-
+            
             if (lockCam)
                 Cursor.Position = mouseCenter;
 

@@ -88,6 +88,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Game.settings</DependentUpon>
     </Compile>
+    <Compile Include="Model\2D\GUI.cs" />
+    <Compile Include="Model\2D\Menu.cs" />
     <Compile Include="Model\Camera\FPCamera.cs" />
     <Compile Include="Model\Camera\TgcFpsCamera.cs" />
     <Compile Include="Model\GameModel.cs" />
@@ -170,6 +172,7 @@
   <ItemGroup>
     <None Include="Media\survivalcraft-logo.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>

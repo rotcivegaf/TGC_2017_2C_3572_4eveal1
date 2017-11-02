@@ -20,7 +20,7 @@ namespace TGC.Group.Model.GameObjects {
             this.numero = numero;
             this.mapa = mapa;
             this.createHeightMapMesh();
-    }
+        }
 
         private Vector3 crearVertice(int i, int j) {
             return new Vector3(
@@ -92,6 +92,39 @@ namespace TGC.Group.Model.GameObjects {
             }
         }       
 
+        public void coliciono() {
+            foreach (InteractiveObject objeto in MyWorld.Objetos) {
+                if (objeto.mesh.Enabled) {
+                    collided = TgcCollisionUtils.intersectRayAABB(pickingRay.Ray, objeto.mesh.BoundingBox, out collisionPoint);
+                    if (collided) {
+                        Vector3 aux = new Vector3(0f, 0f, 0f);
+                        aux.Add(Camara.Position);
+                        aux.Subtract(objeto.mesh.Position);
+                        if (FastMath.Ceiling(aux.Length()) < 65) {
+                            pickedObject = objeto;
+                            if (pickedObject.getHit(Player1.getDamage())) {
+                                setCenterText(Player1.getDamage().ToString() + " Damage");
+                                MyWorld.destroyObject(pickedObject);
+
+                                if (pickedObject.Equals(collidedObject)) MyCamera.Collisioned = false;
+
+                                List<InventoryObject> drops = pickedObject.getDrops();
+                                foreach (InventoryObject invObject in drops) {
+                                    //agrego los drops al inventario del usuario
+                                    if (!Player1.addInventoryObject(invObject)) {
+                                        //no pudo agregar el objeto
+                                        setTopRightText("No hay espacio en el inventario");
+                                    }
+                                }
+                            }
+                            break;
+                        } else {
+                            collided = false;
+                        }
+                    }
+                }
+            }
+
         public void render() {
             D3DDevice.Instance.Device.SetTexture(0, mapa.terrainTexture);
             D3DDevice.Instance.Device.SetTexture(1, null);
@@ -102,7 +135,7 @@ namespace TGC.Group.Model.GameObjects {
 
             foreach (TgcMesh mesh in ObjetosMesh) {
                 mesh.render();
-                mesh.BoundingBox.render();
+                //mesh.BoundingBox.render();
             }
         }
 

@@ -8,5 +8,11 @@ using Microsoft.DirectX;
 namespace TGC.Group.Model.GameObject{
     public class Personaje{
         public bool isMoving = false;
+
+        public float sed = 100;
+        public float hambre = 100;
+        public float cansancio = 100;
+        public float temperatura = 50;
+
     }
 }
