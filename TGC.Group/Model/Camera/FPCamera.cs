@@ -76,7 +76,7 @@ namespace TGC.Group.Model.Camera{
             var moveVector = new Vector3(0, 0, 0);
             //Forward
             if (Input.keyDown(Key.RightShift)) {
-                MovementSpeed = 50;
+                MovementSpeed = 500;
             }
 
             if (Input.keyDown(Key.W)) {

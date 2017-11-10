@@ -1,16 +1,6 @@
-using System;
-using System.Collections.Generic;
-
 using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
-using Microsoft.DirectX.DirectInput;
-using System.Drawing;
 using TGC.Core.Example;
 using TGC.Core.Input;
-using TGC.Core.Textures;
-using TGC.Core.Utils;
-using TGC.Core.SceneLoader;
-
 using TGC.Group.Model.GameObjects;
 using TGC.Group.Model.Camera;
 using TGC.Group.Form;
@@ -47,7 +37,7 @@ namespace TGC.Group.Model{
             Camara = miCamara;
             optimizador = new Optimizador(mapa, miCamara);
             gui = new GUI(personaje, new ObjectCreator(mapa), new Vector3(posX, mapa.getY(posX, posZ), posZ));
-            //menu = new Menu(gameStart, new ObjectCreator(mapa), new Vector3(posX, mapa.getY(posX, posZ), posZ));
+            menu = new Menu(gameStart, new ObjectCreator(mapa), new Vector3(posX, mapa.getY(posX, posZ)-10, posZ));
         }
 
         private void moverMapas() {
@@ -83,14 +73,14 @@ namespace TGC.Group.Model{
             
             DrawText.drawText("Camera pos: " + Core.Utils.TgcParserUtils.printVector3(miCamara.Position), 15, 20, System.Drawing.Color.Red);
             DrawText.drawText("Camera LookAt: " + Core.Utils.TgcParserUtils.printVector3(miCamara.LookAt - miCamara.Position), 15, 40, System.Drawing.Color.Red);
-            //DrawText.drawText("" + menu, 15, 60, System.Drawing.Color.Red);
+            DrawText.drawText("" + mapa.getY(Camara.Position.X, Camara.Position.Z), 15, 60, System.Drawing.Color.Red);
 
             optimizador.renderMap();
 
             mapa.SkyBox.Center = miCamara.Position + new Vector3(-mapa.SkyBox.Size.X / 2, 0, -mapa.SkyBox.Size.Z / 2);
             //miCamara.CameraBox.BoundingBox.render();
             gui.render(DrawText, formPrincipal);
-            //menu.render();
+            menu.render();
 
             PostRender();//Finaliza el render y presenta en pantalla, al igual que el preRender se debe para casos puntuales es mejor utilizar a mano las operaciones de EndScene y PresentScene
         }
@@ -101,7 +91,7 @@ namespace TGC.Group.Model{
 
         public void testPersonaje() {
             if (Input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_LEFT)) {
-                mapa.sectores[4].
+                //mapa.sectores[4].
             }
         }
     }

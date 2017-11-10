@@ -91,7 +91,7 @@ namespace TGC.Group.Model.GameObjects {
                 mesh.Transform = Matrix.Translation(mesh.Position);
             }
         }       
-
+        /*
         public void coliciono() {
             foreach (InteractiveObject objeto in MyWorld.Objetos) {
                 if (objeto.mesh.Enabled) {
@@ -124,7 +124,7 @@ namespace TGC.Group.Model.GameObjects {
                     }
                 }
             }
-
+            */
         public void render() {
             D3DDevice.Instance.Device.SetTexture(0, mapa.terrainTexture);
             D3DDevice.Instance.Device.SetTexture(1, null);

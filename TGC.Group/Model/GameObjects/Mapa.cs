@@ -103,11 +103,30 @@ namespace TGC.Group.Model.GameObjects{
         }
 
         public float getY(float posX, float posZ) {
-            posX = Math.Abs(posX) % ((heightmap.GetLength(0) - 1) * scaleXZ);
-            posZ = Math.Abs(posZ) % ((heightmap.GetLength(0) - 1) * scaleXZ);
-            
-            int posU = (int)(posX / scaleXZ);
-            int posV = (int)(posZ / scaleXZ);
+            var lengthHM = heightmap.GetLength(0);
+            var lengthHM1 = heightmap.GetLength(0) - 1;
+
+            posX = posX % (lengthHM1 * scaleXZ);
+            posZ = posZ % (lengthHM1 * scaleXZ);
+
+            int posU;
+            if (posX > 0) {
+                posU = (int)(posX / scaleXZ);
+            } else {
+                posX = Math.Abs(posX);
+                posU = lengthHM1 - 1 - (int)(posX / scaleXZ);
+                posX = (lengthHM1 * scaleXZ) - posX;
+            }
+
+            int posV;
+            if (posZ > 0) {
+                posV = (int)(posZ / scaleXZ);
+            } else {
+                posZ = Math.Abs(posZ);
+                posV = lengthHM1 - 1 - (int)(posZ / scaleXZ);
+                posZ = (lengthHM1 * scaleXZ) - posZ;
+            }
+
 
             float decimalU = (posX / scaleXZ) - posU;
             float decimalV = (posZ / scaleXZ) - posV;
@@ -126,7 +145,7 @@ namespace TGC.Group.Model.GameObjects{
             //Rotar e invertir textura
             var b = (Bitmap)Image.FromFile(path);
             b.RotateFlip(RotateFlipType.Rotate90FlipX);
-            return Texture.FromBitmap(d3dDevice, b, Usage.None, Pool.Managed);
+            return Texture.FromBitmap(d3dDevice, b, Usage.AutoGenerateMipMap, Pool.Managed);
         }
         
         private int[,] loadHeightMap(string path) {

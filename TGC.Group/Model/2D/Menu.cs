@@ -16,9 +16,9 @@ namespace TGC.Group.Model._2D {
 
         public Menu(bool gameStart, ObjectCreator objectCreator, Vector3 posCamara) {
             this.objectCreator = objectCreator;
-            botones.Add(objectCreator.dibujaBoton(posCamara + new Vector3(0, 0, -170), "CajaVerde\\CajaVerde-TgcScene.xml", new Vector3(1.5f, 0.5f, 0.5f)));
-            botones.Add(objectCreator.dibujaBoton(posCamara + new Vector3(0, 25, -175), "CajaVerde\\CajaVerde-TgcScene.xml", new Vector3(1.5f, 0.5f, 0.5f)));
-            botones.Add(objectCreator.dibujaBoton(posCamara + new Vector3(0, 50, -180), "CajaVerde\\CajaVerde-TgcScene.xml", new Vector3(1.5f, 0.5f, 0.5f)));
+            botones.Add(objectCreator.dibujaBoton(posCamara + new Vector3(5, 30, -120), "CajaPlay\\CajaVerde-TgcScene.xml", new Vector3(1.5f, 0.3f, 0.1f)));
+            botones.Add(objectCreator.dibujaBoton(posCamara + new Vector3(-5, 15, -120), "Caja\\CajaVerde-TgcScene.xml", new Vector3(1.5f, 0.3f, 0.1f)));
+            botones.Add(objectCreator.dibujaBoton(posCamara + new Vector3(5, 0, -120), "CajaQuit\\CajaVerde-TgcScene.xml", new Vector3(1.5f, 0.3f, 0.1f)));
         }
 
         public void render() {
