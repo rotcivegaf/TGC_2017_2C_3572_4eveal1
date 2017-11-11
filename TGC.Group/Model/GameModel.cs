@@ -29,15 +29,19 @@ namespace TGC.Group.Model{
         ///Se llama una sola vez, al principio cuando se ejecuta el ejemplo. Escribir aquí todo el código de inicialización: cargar modelos, texturas, estructuras de optimización, todo procesamiento que podemos pre calcular para nuestro juego.
         public override void Init() {
             personaje = new Personaje();
-            mapa = new Mapa(MediaDir);
+            mapa = new Mapa(MediaDir, ShadersDir);
             
             var posX = mapa.center.X;
             var posZ = mapa.center.Y;
-            miCamara = new FPCamera(new Vector3(posX, mapa.getY(posX, posZ), posZ), 60f, 500f, Input, mapa, personaje);
+            miCamara = new FPCamera(new Vector3(posX, mapa.getY(posX, posZ), posZ), Input, mapa, personaje, gameStart);
             Camara = miCamara;
+
             optimizador = new Optimizador(mapa, miCamara);
-            gui = new GUI(personaje, new ObjectCreator(mapa), new Vector3(posX, mapa.getY(posX, posZ), posZ));
-            menu = new Menu(gameStart, new ObjectCreator(mapa), new Vector3(posX, mapa.getY(posX, posZ)-10, posZ));
+
+            var OC = new ObjectCreator(mapa);
+            var auxV3 = new Vector3(posX, mapa.getY(posX, posZ), posZ);
+            gui = new GUI(personaje,  OC, auxV3);
+            menu = new Menu(OC, auxV3);
         }
 
         private void moverMapas() {
@@ -62,10 +66,26 @@ namespace TGC.Group.Model{
         //Se llama en cada frame. Se debe escribir toda la lógica de computo del modelo, así como también verificar entradas del usuario y reacciones ante ellas.
         public override void Update() {
             PreUpdate();
+            if (!gameStart) {
+                switch (menu.seleccionar(Input)) {
+                    case 0:// start game
+                        gameStart = true;
+                        miCamara.gameStart = true;
+                        miCamara.LockCam = !miCamara.LockCam;
+                        break;
+                    case 1:// opciones
 
-            moverMapas();
-            mapa.testCollisions(miCamara, personaje);
-            testPersonaje();
+                        break;
+                    case 2:// quit
+                        this.Dispose();
+                        formPrincipal.Close();
+                        return;
+                }
+            } else {
+                moverMapas();
+                mapa.testCollisions(miCamara, personaje);
+                testPersonaje();
+            }
         }
         ///Se llama cada vez que hay que refrescar la pantalla.
         public override void Render() {
@@ -73,14 +93,15 @@ namespace TGC.Group.Model{
             
             DrawText.drawText("Camera pos: " + Core.Utils.TgcParserUtils.printVector3(miCamara.Position), 15, 20, System.Drawing.Color.Red);
             DrawText.drawText("Camera LookAt: " + Core.Utils.TgcParserUtils.printVector3(miCamara.LookAt - miCamara.Position), 15, 40, System.Drawing.Color.Red);
-            DrawText.drawText("" + mapa.getY(Camara.Position.X, Camara.Position.Z), 15, 60, System.Drawing.Color.Red);
 
             optimizador.renderMap();
 
             mapa.SkyBox.Center = miCamara.Position + new Vector3(-mapa.SkyBox.Size.X / 2, 0, -mapa.SkyBox.Size.Z / 2);
             //miCamara.CameraBox.BoundingBox.render();
             gui.render(DrawText, formPrincipal);
-            menu.render();
+
+            if(!gameStart)
+                menu.render();
 
             PostRender();//Finaliza el render y presenta en pantalla, al igual que el preRender se debe para casos puntuales es mejor utilizar a mano las operaciones de EndScene y PresentScene
         }

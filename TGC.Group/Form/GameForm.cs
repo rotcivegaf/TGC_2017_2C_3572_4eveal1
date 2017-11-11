@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
 using TGC.Core.Direct3D;
@@ -8,7 +7,6 @@ using TGC.Core.Input;
 using TGC.Core.Shaders;
 using TGC.Core.Sound;
 using TGC.Core.Textures;
-using TGC.Group.Model;
 
 namespace TGC.Group.Form{
     public partial class GameForm : System.Windows.Forms.Form{
@@ -20,7 +18,6 @@ namespace TGC.Group.Form{
         private bool ApplicationRunning { get; set; }
         private TgcDirectSound DirectSound { get; set; }
         private TgcD3dInput Input { get; set; }
-        public int Mode = 0;
 
         private void GameForm_Load(object sender, EventArgs e){
             InitRenderLoop();//Inicio el ciclo de Render.
@@ -36,6 +33,7 @@ namespace TGC.Group.Form{
                 ShutDown();
             }
         }
+
         public void InitGraphics(){ ///Inicio todos los objetos necesarios para cargar el ejemplo y directx.
             ApplicationRunning = true;//Se inicio la aplicación
             D3DDevice.Instance.InitializeD3DDevice(panel3D);//Inicio Device
@@ -93,11 +91,14 @@ namespace TGC.Group.Form{
             }
         }
 
-        public void StopCurrentExample(){//Deja de ejecutar el ejemplo actual
-            if (Modelo != null){
+        public void StopCurrentExample() {//Deja de ejecutar el ejemplo actual
+            if (Modelo != null) {
                 Modelo.Dispose();
                 Modelo = null;
             }
+        }
+        public void cerrar() {
+            Close();
         }
 
         public void ShutDown(){
@@ -108,26 +109,7 @@ namespace TGC.Group.Form{
             TexturesPool.Instance.clearAll();
         }
 
-        private void button_play_Click(object sender, EventArgs e){
-            InitGraphics();//Iniciar graficos.
-            Text = Modelo.Name + " - " + Modelo.Description;//Titulo de la ventana principal.
-            panel3D.Focus();//Focus panel3D.
-            InitRenderLoop();//Inicio el ciclo de Render.
-    }
-
-    private void button_quit_Click(object sender, EventArgs e){
-            this.Close();
-        }
-
         private void panel3D_Paint(object sender, PaintEventArgs e){
-            //this.BackColor = Color.Black;
-            //private Graphics newGraphics;
-             //"Media\\logo.png");
-
-        }
-
-        private void inventarioForm_Paint(object sender, PaintEventArgs e){
-
         }
     }
 }

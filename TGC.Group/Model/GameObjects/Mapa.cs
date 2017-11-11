@@ -39,13 +39,15 @@ namespace TGC.Group.Model.GameObjects{
 
         public Texture terrainTexture;
         public String MediaDir;
+        public String shaderDir;
 
         public int totalVertices;
 
-        public Mapa(String mediaDir) {
+        public Mapa(String mediaDir, String shaderDir) {
             Device = D3DDevice.Instance.Device;//Device de DirectX para crear primitivas.
             Loader = new TgcSceneLoader();
 
+            this.shaderDir = shaderDir;
             MediaDir = mediaDir;
             //Path de Heightmap default del terreno y Modifier para cambiarla
             var currentHeightmap = MediaDir + "b.jpg";

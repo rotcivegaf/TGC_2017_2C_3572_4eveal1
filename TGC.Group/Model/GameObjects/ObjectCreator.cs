@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TGC.Core.SceneLoader;
 using TGC.Core.Geometry;
+using TGC.Core.Shaders;
 
 namespace TGC.Group.Model.GameObjects {
     public class ObjectCreator {
@@ -39,6 +40,9 @@ namespace TGC.Group.Model.GameObjects {
             boton.Position = pos;
             boton.Transform = Matrix.Scaling(boton.Scale) * Matrix.Translation(boton.Position);
             boton.AlphaBlendEnable = true;
+            boton.Effect = TgcShaders.loadEffect(mapa.shaderDir + "rotarEjeX.fx");
+            boton.Technique = "RenderScene";
+
             return boton;
         }
 
