@@ -11,7 +11,7 @@ namespace TGC.Group.Model.GameObject{
 
         public float sed = 100;
         public float hambre = 100;
-        public float cansancio = 100;
+        public float cansancio = 104;
         public float temperatura = 50;
 
     }

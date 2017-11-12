@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TGC.Core.Camara;
+﻿using TGC.Core.Camara;
 using System.Drawing;
 using Microsoft.DirectX;
 using TGC.Core.Input;
 using TGC.Core.Direct3D;
-using TGC.Core.Utils;
 using System.Windows.Forms;
 using Microsoft.DirectX.DirectInput;
 using TGC.Group.Model.GameObjects;

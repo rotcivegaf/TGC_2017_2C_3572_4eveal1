@@ -89,10 +89,13 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Game.settings</DependentUpon>
     </Compile>
+    <Compile Include="Model\2D\Barra.cs" />
+    <Compile Include="Model\2D\Core\CustomBitmap.cs" />
+    <Compile Include="Model\2D\Core\CustomSprite.cs" />
+    <Compile Include="Model\2D\Core\Drawer2D.cs" />
     <Compile Include="Model\2D\GUI.cs" />
     <Compile Include="Model\2D\Menu.cs" />
     <Compile Include="Model\Camera\FPCamera.cs" />
-    <Compile Include="Model\Camera\TgcFpsCamera.cs" />
     <Compile Include="Model\GameModel.cs" />
     <Compile Include="Model\GameObjects\Mapa.cs" />
     <Compile Include="Model\GameObjects\ObjectCreator.cs" />

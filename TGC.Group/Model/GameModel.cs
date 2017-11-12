@@ -40,7 +40,7 @@ namespace TGC.Group.Model{
 
             var OC = new ObjectCreator(mapa);
             var auxV3 = new Vector3(posX, mapa.getY(posX, posZ), posZ);
-            gui = new GUI(personaje,  OC, auxV3);
+            gui = new GUI(personaje, auxV3, MediaDir);
             menu = new Menu(OC, auxV3);
         }
 
@@ -112,7 +112,10 @@ namespace TGC.Group.Model{
 
         public void testPersonaje() {
             if (Input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_LEFT)) {
-                //mapa.sectores[4].
+                --personaje.cansancio;
+                if(personaje.cansancio < 0) {
+                    personaje.cansancio = 0;
+                }
             }
         }
     }
