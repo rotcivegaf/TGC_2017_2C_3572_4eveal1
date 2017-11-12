@@ -75,9 +75,19 @@ namespace TGC.Group.Model.GameObjects {
         }
 
         public void crearObj(ObjectCreator creador) {
-            ObjetosMesh.AddRange(creador.createObjects(25, "Meshes\\Pino\\Pino-TgcScene.xml", 5, numero.X * mapa.length, numero.Y * mapa.length, false));
-            ObjetosMesh.AddRange(creador.createObjects(25, "Meshes\\Pasto\\Pasto-TgcScene.xml", 2, numero.X * mapa.length, numero.Y * mapa.length, true));
-            ObjetosMesh.AddRange(creador.createObjects(25, "Meshes\\Roca\\Roca-TgcScene.xml", 10, numero.X * mapa.length, numero.Y * mapa.length, false));
+            //ObjetosMesh.AddRange(creador.createObjects(5, "Meshes\\Pino\\Pino-TgcScene.xml", 5, numero.X * mapa.length, numero.Y * mapa.length, false));
+            float x = numero.X * mapa.length;
+            float y = numero.Y * mapa.length;
+            ObjetosMesh.AddRange(creador.createObjects(15, "Meshes\\Pasto\\Pasto-TgcScene.xml", 2, x, y, true));
+            ObjetosMesh.AddRange(creador.createObjects(10, "Meshes\\Planta\\Planta-TgcScene.xml", 10, x, y, true));
+            ObjetosMesh.AddRange(creador.createObjects(10, "Meshes\\Planta2\\Planta2-TgcScene.xml", 20, x, y, true));
+            ObjetosMesh.AddRange(creador.createObjects(10, "Meshes\\Planta3\\Planta3-TgcScene.xml", 10, x, y, true));
+
+            ObjetosMesh.AddRange(creador.createObjects(15, "Meshes\\Roca\\Roca-TgcScene.xml", 10, x, y, false));
+            ObjetosMesh.AddRange(creador.createObjects(5, "Meshes\\Palmera\\Palmera-TgcScene.xml", 10, x, y, false));
+            ObjetosMesh.AddRange(creador.createObjects(5, "Meshes\\Palmera2\\Palmera2-TgcScene.xml", 10, x, y, false));
+            ObjetosMesh.AddRange(creador.createObjects(5, "Meshes\\Palmera3\\Palmera3-TgcScene.xml", 10, x, y, false));
+            ObjetosMesh.AddRange(creador.createObjects(5, "Meshes\\ArbolBananas\\ArbolBananas-TgcScene.xml", 20, x, y, false));
         }
 
         public void mover(float x, float z) {

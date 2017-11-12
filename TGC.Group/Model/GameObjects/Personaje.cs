@@ -9,8 +9,8 @@ namespace TGC.Group.Model.GameObject{
     public class Personaje{
         public bool isMoving = false;
 
-        public float sed = 2;
-        public float hambre = 2;
+        public float sed = 104;
+        public float hambre = 104;
         public float cansancio = 104;
         public float temperatura = 50;
 
