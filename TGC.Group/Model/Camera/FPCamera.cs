@@ -31,6 +31,8 @@ namespace TGC.Group.Model.Camera{
         public TgcBox CameraBox { get; set; } = TgcBox.fromExtremes(new Vector3(0, 0, 0), new Vector3(2, 2, 2));
         public bool Collisioned { get; set; } = false;
 
+        private float runningTime = 0;
+
         public FPCamera(Vector3 positionEye, TgcD3dInput input, Mapa mapa, Personaje personaje, bool gameStart) {
             this.personaje = personaje;
             Input = input;
@@ -63,11 +65,33 @@ namespace TGC.Group.Model.Camera{
         }
 
         public override void UpdateCamera(float elapsedTime) {
-            if (Input.keyDown(Key.RightShift) || Input.keyDown(Key.LeftShift)) {
+            if (personaje.cansancio > 0 && (Input.keyDown(Key.RightShift) || Input.keyDown(Key.LeftShift))) {
+                runningTime += elapsedTime;
                 MovementSpeed = 125;
+                if (runningTime >= 0.1) {
+                    personaje.cansancio--;
+                    personaje.sed -= 0.05f;
+                    personaje.hambre -= 0.025f;
+                    runningTime = 0;
+                }
             } else {
+                runningTime += elapsedTime;
                 MovementSpeed = 75;
+                if (runningTime >= 0.2 && personaje.sed > 0 && personaje.hambre > 0) {
+                    personaje.cansancio++;
+                    runningTime = 0;
+                }
             }
+
+            if (personaje.sed < 0)
+                personaje.sed = 0;
+            if (personaje.hambre < 0)
+                personaje.hambre = 0;
+            if (personaje.cansancio < 0)
+                personaje.cansancio = 0;
+            if (personaje.cansancio > 104)
+                personaje.cansancio = 104;
+
 
             if (gameStart && (Input.keyPressed(Key.L) || Input.keyPressed(Key.Escape))) {
                 LockCam = !lockCam;

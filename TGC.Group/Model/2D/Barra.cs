@@ -32,7 +32,7 @@ namespace TGC.Group.Model._2D {
             
             spriteIni =    load(pathIni   , 1, 0, 14 , 32, 0  );
             spriteCenter = load(pathCentro, 0, 0, 100, 32, 14 );
-            spriteFin =    load(pathFin   , 1, 0, 14 , 32, 114);
+            spriteFin =    load(pathFin   , 1, 0, 14 , 32, 113);
         }
 
         private CustomSprite load(string dir, int xIniBM, int yIniBM, int ancho, int alto, int deltaX) {

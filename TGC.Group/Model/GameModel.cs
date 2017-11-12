@@ -86,6 +86,8 @@ namespace TGC.Group.Model{
                 mapa.testCollisions(miCamara, personaje);
                 testPersonaje();
             }
+            if (personaje.hambre <= 0 && personaje.sed <= 0)
+                gameStart = false;
         }
         ///Se llama cada vez que hay que refrescar la pantalla.
         public override void Render() {
@@ -93,6 +95,7 @@ namespace TGC.Group.Model{
             
             DrawText.drawText("Camera pos: " + Core.Utils.TgcParserUtils.printVector3(miCamara.Position), 15, 20, System.Drawing.Color.Red);
             DrawText.drawText("Camera LookAt: " + Core.Utils.TgcParserUtils.printVector3(miCamara.LookAt - miCamara.Position), 15, 40, System.Drawing.Color.Red);
+            DrawText.drawText("Camera LookAt: " + gameStart, 15, 60, System.Drawing.Color.Red);
 
             optimizador.renderMap();
 
