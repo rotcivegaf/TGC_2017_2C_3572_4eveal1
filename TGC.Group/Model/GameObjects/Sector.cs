@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
+using TGC.Core.Collision;
 using TGC.Core.Direct3D;
+using TGC.Core.Geometry;
 using TGC.Core.SceneLoader;
 
 namespace TGC.Group.Model.GameObjects {
@@ -15,6 +13,8 @@ namespace TGC.Group.Model.GameObjects {
         public VertexBuffer vbTerrain;
         public CustomVertex.PositionTextured[] data;
         public List<TgcMesh> ObjetosMesh = new List<TgcMesh>();
+
+        private Vector3 collisionPoint;
 
         public Sector(Vector2 numero, Mapa mapa) {
             this.numero = numero;
@@ -101,12 +101,17 @@ namespace TGC.Group.Model.GameObjects {
                 mesh.Transform = Matrix.Translation(mesh.Position);
             }
         }       
-        /*
-        public void coliciono() {
-            foreach (InteractiveObject objeto in MyWorld.Objetos) {
-                if (objeto.mesh.Enabled) {
-                    collided = TgcCollisionUtils.intersectRayAABB(pickingRay.Ray, objeto.mesh.BoundingBox, out collisionPoint);
-                    if (collided) {
+
+        public bool testPicking(TgcPickingRay pickingRay) {
+            bool colliciono = false;
+            foreach (TgcMesh mesh in ObjetosMesh) {
+                return TgcCollisionUtils.intersectRayAABB(pickingRay.Ray, mesh.BoundingBox, out collisionPoint);
+                
+            }
+            return colliciono;
+                
+                    
+                  /*  if (collided) {
                         Vector3 aux = new Vector3(0f, 0f, 0f);
                         aux.Add(Camara.Position);
                         aux.Subtract(objeto.mesh.Position);
@@ -132,9 +137,9 @@ namespace TGC.Group.Model.GameObjects {
                             collided = false;
                         }
                     }
-                }
-            }
-            */
+                }*/
+        }
+
         public void render() {
             D3DDevice.Instance.Device.SetTexture(0, mapa.terrainTexture);
             D3DDevice.Instance.Device.SetTexture(1, null);
@@ -150,11 +155,10 @@ namespace TGC.Group.Model.GameObjects {
         }
 
         public void dispose() {
-            vbTerrain.Dispose();
-
             foreach (TgcMesh mesh in ObjetosMesh) {
                 mesh.dispose();
             }
+            vbTerrain.Dispose();
         }
     }
 }

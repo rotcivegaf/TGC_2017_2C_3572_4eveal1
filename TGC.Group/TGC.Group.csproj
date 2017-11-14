@@ -97,6 +97,7 @@
     <Compile Include="Model\2D\Menu.cs" />
     <Compile Include="Model\Camera\FPCamera.cs" />
     <Compile Include="Model\GameModel.cs" />
+    <Compile Include="Model\GameObjects\Inventario.cs" />
     <Compile Include="Model\GameObjects\Mapa.cs" />
     <Compile Include="Model\GameObjects\ObjectCreator.cs" />
     <Compile Include="Model\GameObjects\Personaje.cs" />

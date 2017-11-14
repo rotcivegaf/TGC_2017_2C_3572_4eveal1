@@ -2,19 +2,9 @@
 using System.Collections.Generic;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
-using Microsoft.DirectX.DirectInput;
 using System.Drawing;
 using TGC.Core.Direct3D;
-using TGC.Core.Example;
-using TGC.Core.Input;
-using TGC.Core.Textures;
-using TGC.Core.Utils;
-
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TGC.Core.SceneLoader;
-using TGC.Core.Geometry;
 using TGC.Core.Terrain;
 using TGC.Core.Collision;
 using TGC.Group.Model.Camera;
@@ -29,7 +19,7 @@ namespace TGC.Group.Model.GameObjects{
         public Microsoft.DirectX.Direct3D.Device Device;
 
         public Sector[] sectores;
-
+        
         public float scaleXZ = 16f;
         public float scaleY = 0.4f;
         public float deltaCenter;
@@ -40,7 +30,6 @@ namespace TGC.Group.Model.GameObjects{
         public Texture terrainTexture;
         public String MediaDir;
         public String shaderDir;
-
         public int totalVertices;
 
         public Mapa(String mediaDir, String shaderDir) {
