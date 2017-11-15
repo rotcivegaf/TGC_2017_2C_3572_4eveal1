@@ -103,7 +103,7 @@ namespace TGC.Group.Model{
 
             DrawText.drawText("Camera pos: " + Core.Utils.TgcParserUtils.printVector3(miCamara.Position), 15, 20, System.Drawing.Color.Red);
             DrawText.drawText("Camera LookAt: " + Core.Utils.TgcParserUtils.printVector3(miCamara.LookAt - miCamara.Position), 15, 40, System.Drawing.Color.Red);
-            DrawText.drawText("Camera LookAt: " + AUX, 15, 60, System.Drawing.Color.Red);
+            DrawText.drawText("Camera LookAt: " + mapa.sectores[4].AUX, 15, 60, System.Drawing.Color.Red);
 
             optimizador.renderMap();
 
@@ -126,7 +126,7 @@ namespace TGC.Group.Model{
 
             if (Input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_LEFT) && tiempoAccion > 0.2f) {
                 pickingRay.updateRay();
-                mapa.sectores[4].testPicking(pickingRay);
+                mapa.sectores[4].testPicking(pickingRay, personaje);
                 tiempoAccion = 0;
             }
             if (Input.keyDown(Key.D1) && tiempoAccion > 0.2f) {

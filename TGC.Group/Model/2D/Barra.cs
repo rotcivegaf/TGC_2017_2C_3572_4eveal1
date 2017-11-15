@@ -27,9 +27,9 @@ namespace TGC.Group.Model._2D {
             spriteBackIni = drawer2D.load(mediaDir + "2D\\barBack1.png", new Vector2(1, 0), new Vector2(14, 32), posIni, scala);
             spriteIni = drawer2D.load(mediaDir + pathIni, new Vector2(1, 0), new Vector2(14, 32), posIni, scala);
             posIni += new Vector2(14, 0);
-            spriteBackCenter = drawer2D.load(mediaDir + "2D\\barBack2.png", new Vector2(0, 0), new Vector2(100, 32), posIni, scala);
-            spriteCenter = drawer2D.load(mediaDir + pathCentro, new Vector2(0, 0), new Vector2(100, 32), posIni, scala);
-            posIni += new Vector2(100, 0);
+            spriteBackCenter = drawer2D.load(mediaDir + "2D\\barBack2.png", new Vector2(0, 0), new Vector2(97, 32), posIni, scala);
+            spriteCenter = drawer2D.load(mediaDir + pathCentro, new Vector2(0, 0), new Vector2(97, 32), posIni, scala);
+            posIni += new Vector2(97, 0);
             spriteBackFin = drawer2D.load(mediaDir + "2D\\barBack3.png", new Vector2(1, 0), new Vector2(14, 32), posIni, scala);
             spriteFin = drawer2D.load(mediaDir + pathFin, new Vector2(1, 0), new Vector2(14, 32), posIni, scala);
         }
@@ -43,10 +43,9 @@ namespace TGC.Group.Model._2D {
 
             if (cant > 0)
                 drawer2D.DrawSprite(spriteIni);
-            if (cant > 99)
+            if (cant > 97)
                 drawer2D.DrawSprite(spriteFin);
-            else                    
-                spriteCenter.SrcRect = new Rectangle(1, 0, cant, 32);
+            spriteCenter.SrcRect = new Rectangle(1, 0, cant, 32);
 
             drawer2D.DrawSprite(spriteCenter);
         }

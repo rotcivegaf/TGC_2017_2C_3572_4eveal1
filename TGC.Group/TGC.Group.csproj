@@ -178,6 +178,7 @@
     <None Include="Media\survivalcraft-logo.png" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Shaders\PostProcess.fx" />
     <Content Include="Shaders\rotarEjeX.fx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

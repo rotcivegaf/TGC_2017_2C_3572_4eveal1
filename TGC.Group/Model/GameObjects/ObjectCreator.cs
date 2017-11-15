@@ -49,7 +49,7 @@ namespace TGC.Group.Model.GameObjects {
             TgcMesh instance;
 
             for (int i = 1; i <= cantidad; i++) {
-                instance = objeto.createMeshInstance(objeto.Name + "_" + i);
+                instance = objeto.createMeshInstance(objeto.Name);
                 instance.Scale = getRandomScaleVector();
                 instance.Position = getRandomPositionVector(deltaY, xIni, zIni);
                 instance.Transform = Matrix.Scaling(instance.Scale) * Matrix.Translation(instance.Position);

@@ -69,7 +69,7 @@ namespace TGC.Group.Model.Camera{
                 runningTime += elapsedTime;
                 MovementSpeed = 125;
                 if (runningTime >= 0.1) {
-                    personaje.cansancio--;
+                    personaje.cansancio -= 0.5f;
                     personaje.sed -= 0.05f;
                     personaje.hambre -= 0.025f;
                     runningTime = 0;
@@ -89,8 +89,8 @@ namespace TGC.Group.Model.Camera{
                 personaje.hambre = 0;
             if (personaje.cansancio < 0)
                 personaje.cansancio = 0;
-            if (personaje.cansancio > 104)
-                personaje.cansancio = 104;
+            if (personaje.cansancio > 100)
+                personaje.cansancio = 100;
 
 
             if (gameStart && (Input.keyPressed(Key.L) || Input.keyPressed(Key.Escape))) {

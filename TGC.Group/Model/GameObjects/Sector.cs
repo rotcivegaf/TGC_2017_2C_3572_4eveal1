@@ -5,14 +5,20 @@ using TGC.Core.Collision;
 using TGC.Core.Direct3D;
 using TGC.Core.Geometry;
 using TGC.Core.SceneLoader;
+using TGC.Group.Model.GameObject;
 
 namespace TGC.Group.Model.GameObjects {
     public class Sector {
+        public string AUX;
         public Vector2 numero;
         public Mapa mapa;
         public VertexBuffer vbTerrain;
         public CustomVertex.PositionTextured[] data;
         public List<TgcMesh> ObjetosMesh = new List<TgcMesh>();
+        public List<TgcMesh> ObjetosMeshSinRender = new List<TgcMesh>();
+
+        public TgcMesh meshAnterior = null;
+        public int golpes = 0;
 
         private Vector3 collisionPoint;
 
@@ -95,49 +101,45 @@ namespace TGC.Group.Model.GameObjects {
                 data[i].Position += new Vector3(x, 0, z);
             }
             vbTerrain.SetData(data, 0, LockFlags.None);
-            
+
+            ObjetosMesh.AddRange(ObjetosMeshSinRender);
+            ObjetosMeshSinRender.Clear();
             foreach (TgcMesh mesh in ObjetosMesh) {
                 mesh.Position += new Vector3(x, 0, z);
                 mesh.Transform = Matrix.Translation(mesh.Position);
             }
         }       
 
-        public bool testPicking(TgcPickingRay pickingRay) {
-            bool colliciono = false;
+        public void testPicking(TgcPickingRay pickingRay, Personaje personaje) {
+            personaje.sed -= 0.025f;
+            personaje.hambre -= 0.05f;
+
             foreach (TgcMesh mesh in ObjetosMesh) {
-                return TgcCollisionUtils.intersectRayAABB(pickingRay.Ray, mesh.BoundingBox, out collisionPoint);
-                
-            }
-            return colliciono;
-                
-                    
-                  /*  if (collided) {
-                        Vector3 aux = new Vector3(0f, 0f, 0f);
-                        aux.Add(Camara.Position);
-                        aux.Subtract(objeto.mesh.Position);
-                        if (FastMath.Ceiling(aux.Length()) < 65) {
-                            pickedObject = objeto;
-                            if (pickedObject.getHit(Player1.getDamage())) {
-                                setCenterText(Player1.getDamage().ToString() + " Damage");
-                                MyWorld.destroyObject(pickedObject);
-
-                                if (pickedObject.Equals(collidedObject)) MyCamera.Collisioned = false;
-
-                                List<InventoryObject> drops = pickedObject.getDrops();
-                                foreach (InventoryObject invObject in drops) {
-                                    //agrego los drops al inventario del usuario
-                                    if (!Player1.addInventoryObject(invObject)) {
-                                        //no pudo agregar el objeto
-                                        setTopRightText("No hay espacio en el inventario");
-                                    }
-                                }
-                            }
-                            break;
-                        } else {
-                            collided = false;
-                        }
+                if (TgcCollisionUtils.intersectRayAABB(pickingRay.Ray, mesh.BoundingBox, out collisionPoint)) {
+                    if (golpes > 2) {
+                        if (mesh.Name == "Roca")
+                            if (personaje.inventario.piedra < personaje.inventario.maxCant)
+                                personaje.inventario.piedra++;
+                        if (mesh.Name == "ArbolBananas")
+                            if (personaje.inventario.banana < personaje.inventario.maxCant)
+                                personaje.inventario.banana++;
+                        if (mesh.Name == "Palmera" || mesh.Name == "Palmera2" || mesh.Name == "Palmera3" || mesh.Name == "Planta" || mesh.Name == "Planta2" || mesh.Name == "Planta3")
+                            if (personaje.inventario.madera < personaje.inventario.maxCant)
+                                personaje.inventario.madera++;
+                        if (mesh.Name == "agua")//TODO
+                            if (personaje.inventario.agua < personaje.inventario.maxCant)
+                                personaje.inventario.agua++;
+                        ObjetosMeshSinRender.Add(mesh);
+                        ObjetosMesh.Remove(mesh);
+                        golpes = 0;
+                    } else {
+                        if (mesh.Equals(meshAnterior))
+                            ++golpes;
+                        meshAnterior = mesh;
                     }
-                }*/
+                    return;
+                }
+            }
         }
 
         public void render() {

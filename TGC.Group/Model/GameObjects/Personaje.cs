@@ -4,9 +4,9 @@ namespace TGC.Group.Model.GameObject{
     public class Personaje{
         public bool isMoving = false;
 
-        public float sed = 104;
-        public float hambre = 104;
-        public float cansancio = 104;
+        public float sed = 100;
+        public float hambre = 100;
+        public float cansancio = 100;
         public float temperatura = 50;
 
         public Inventario inventario = new Inventario();
@@ -14,8 +14,8 @@ namespace TGC.Group.Model.GameObject{
         public void beber() {
             if (inventario.agua > 0) {
                 sed += 20;
-                if (sed > 104)
-                    sed = 104;
+                if (sed > 100)
+                    sed = 100;
                 --inventario.agua;
             }
         }
@@ -23,8 +23,8 @@ namespace TGC.Group.Model.GameObject{
         public void comer() {
             if (inventario.banana > 0) {
                 hambre += 15;
-                if (hambre > 104)
-                    hambre = 104;
+                if (hambre > 100)
+                    hambre = 100;
                 --inventario.banana;
             }
         }
