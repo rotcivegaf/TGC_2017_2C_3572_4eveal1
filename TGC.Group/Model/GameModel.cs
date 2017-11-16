@@ -9,10 +9,15 @@ using TGC.Group.Model.GameObject;
 using TGC.Group.Model._2D;
 using TGC.Core.Geometry;
 using Microsoft.DirectX.DirectInput;
+using TGC.Core.Direct3D;
+using Microsoft.DirectX.Direct3D;
+using System.Drawing;
+using TGC.Core.Shaders;
+using TGC.Core.Textures;
+using TGC.Core.Interpolation;
 
 namespace TGC.Group.Model{
     public class GameModel: TgcExample {
-        public bool AUX;
         public Mapa mapa;
         public Optimizador optimizador;
         public Personaje personaje;
@@ -25,6 +30,15 @@ namespace TGC.Group.Model{
 
         public Key lastKey;
         public float tiempoAccion;
+
+        TgcTexture alarmTexture;
+        Microsoft.DirectX.Direct3D.Effect effect;
+        private Surface pOldRT;
+        private Surface pOldDS;
+        private Texture renderTarget2D;
+        private Surface depthStencil;
+        private VertexBuffer screenQuadVB;
+        private InterpoladorVaiven intVaivenAlarm;
 
         public GameModel(string mediaDir, string shadersDir, GameForm form) : base(mediaDir, shadersDir) {
             Category = Game.Default.Category;
@@ -50,6 +64,52 @@ namespace TGC.Group.Model{
             gui = new GUI(personaje, auxV3, MediaDir);
             menu = new Menu(OC, auxV3);
             pickingRay = new TgcPickingRay(Input);
+
+
+            intVaivenAlarm = new InterpoladorVaiven();
+            intVaivenAlarm.Min = 0;
+            intVaivenAlarm.Max = 1;
+            intVaivenAlarm.Speed = 5;
+            intVaivenAlarm.reset();
+
+            CustomVertex.PositionTextured[] screenQuadVertices =
+            {
+                new CustomVertex.PositionTextured(-1, 1, 1, 0, 0),
+                new CustomVertex.PositionTextured(1, 1, 1, 1, 0),
+                new CustomVertex.PositionTextured(-1, -1, 1, 0, 1),
+                new CustomVertex.PositionTextured(1, -1, 1, 1, 1)
+            };
+            //vertex buffer de los triangulos
+            screenQuadVB = new VertexBuffer(typeof(CustomVertex.PositionTextured),
+                4, D3DDevice.Instance.Device, Usage.Dynamic | Usage.WriteOnly,
+                CustomVertex.PositionTextured.Format, Pool.Default);
+            screenQuadVB.SetData(screenQuadVertices, 0, LockFlags.None);
+
+            renderTarget2D = new Texture(D3DDevice.Instance.Device,
+                D3DDevice.Instance.Device.PresentationParameters.BackBufferWidth
+                , D3DDevice.Instance.Device.PresentationParameters.BackBufferHeight, 1, Usage.RenderTarget,
+                Format.X8R8G8B8, Pool.Default);
+
+            depthStencil =
+                D3DDevice.Instance.Device.CreateDepthStencilSurface(
+                    D3DDevice.Instance.Device.PresentationParameters.BackBufferWidth,
+                    D3DDevice.Instance.Device.PresentationParameters.BackBufferHeight,
+                    DepthFormat.D24S8, MultiSampleType.None, 0, true);
+
+            effect = TgcShaders.loadEffect(ShadersDir + "PostProcess.fx");
+
+            //Configurar Technique dentro del shader
+            effect.Technique = "AlarmaTechnique";
+
+            //Cargar textura que se va a dibujar arriba de la escena del Render Target
+            alarmTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + "Textures\\efecto_alarma.png");
+            
+            // SkyBox: Se cambia el valor por defecto del farplane para evitar cliping de farplane.
+            D3DDevice.Instance.Device.Transform.Projection =
+                Matrix.PerspectiveFovLH(D3DDevice.Instance.FieldOfView,
+                    D3DDevice.Instance.AspectRatio,
+                    D3DDevice.Instance.ZNearPlaneDistance,
+                    D3DDevice.Instance.ZFarPlaneDistance * 2560f);
         }
 
         private void moverMapas() {
@@ -96,14 +156,65 @@ namespace TGC.Group.Model{
             }
             if (personaje.hambre <= 0 && personaje.sed <= 0)
                 gameStart = false;
-        }
+        } 
         ///Se llama cada vez que hay que refrescar la pantalla.
         public override void Render() {
-            PreRender(); //Inicio el render de la escena, para ejemplos simples. Cuando tenemos postprocesado o shaders es mejor realizar las operaciones según nuestra conveniencia.
+            ClearTextures();
+
+            pOldRT = D3DDevice.Instance.Device.GetRenderTarget(0);
+            pOldDS = D3DDevice.Instance.Device.DepthStencilSurface;
+            var pSurf = renderTarget2D.GetSurfaceLevel(0);
+            D3DDevice.Instance.Device.SetRenderTarget(0, pSurf);
+
+            D3DDevice.Instance.Device.DepthStencilSurface = depthStencil;
+
+            D3DDevice.Instance.Device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
+
+            drawSceneToRenderTarget(D3DDevice.Instance.Device);
+            pSurf.Dispose();
+
+            D3DDevice.Instance.Device.SetRenderTarget(0, pOldRT);
+            D3DDevice.Instance.Device.DepthStencilSurface = pOldDS;
+
+            drawPostProcess(D3DDevice.Instance.Device);
+        }
+        
+        private void drawPostProcess(Microsoft.DirectX.Direct3D.Device d3dDevice) {
+            d3dDevice.BeginScene();
+
+            d3dDevice.VertexFormat = CustomVertex.PositionTextured.Format;
+            d3dDevice.SetStreamSource(0, screenQuadVB, 0);
+
+            effect.Technique = "DefaultTechnique";
+            if (gameStart) {
+                if (personaje.hambre < 25 && personaje.sed < 25) {
+                    effect.Technique = "AlarmaTechnique";
+                }
+            }
+            
+            effect.SetValue("render_target2D", renderTarget2D);
+            effect.SetValue("textura_alarma", alarmTexture.D3dTexture);
+            effect.SetValue("alarmaScaleFactor", intVaivenAlarm.update(ElapsedTime/((personaje.hambre + personaje.sed)/10)));
+
+            d3dDevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
+            effect.Begin(FX.None);
+            effect.BeginPass(0);
+            d3dDevice.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
+            effect.EndPass();
+            effect.End();
+
+            RenderFPS();
+            RenderAxis();
+
+            d3dDevice.EndScene();
+            d3dDevice.Present();
+        }
+
+        public void drawSceneToRenderTarget(Microsoft.DirectX.Direct3D.Device d3dDevice) {
+            d3dDevice.BeginScene();
 
             DrawText.drawText("Camera pos: " + Core.Utils.TgcParserUtils.printVector3(miCamara.Position), 15, 20, System.Drawing.Color.Red);
             DrawText.drawText("Camera LookAt: " + Core.Utils.TgcParserUtils.printVector3(miCamara.LookAt - miCamara.Position), 15, 40, System.Drawing.Color.Red);
-            DrawText.drawText("Camera LookAt: " + mapa.sectores[4].AUX, 15, 60, System.Drawing.Color.Red);
 
             optimizador.renderMap();
 
@@ -114,9 +225,9 @@ namespace TGC.Group.Model{
             if (!gameStart)
                 menu.render();
 
-            PostRender();//Finaliza el render y presenta en pantalla, al igual que el preRender se debe para casos puntuales es mejor utilizar a mano las operaciones de EndScene y PresentScene
+            d3dDevice.EndScene();
         }
-        ///Se llama cuando termina la ejecución del ejemplo. Hacer Dispose() de todos los objetos creados. Es muy importante liberar los recursos, sobretodo los gráficos ya que quedan bloqueados en el device de video.
+
         public override void Dispose() {
             mapa.dispose();
         }

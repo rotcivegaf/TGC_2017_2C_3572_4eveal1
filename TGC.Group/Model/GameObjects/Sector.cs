@@ -111,8 +111,12 @@ namespace TGC.Group.Model.GameObjects {
         }       
 
         public void testPicking(TgcPickingRay pickingRay, Personaje personaje) {
-            personaje.sed -= 0.025f;
-            personaje.hambre -= 0.05f;
+            personaje.sed -= 0.05f;
+            personaje.hambre -= 0.1f;
+            if (personaje.sed < 0)
+                personaje.sed = 0;
+            if (personaje.hambre < 0)
+                personaje.hambre = 0;
 
             foreach (TgcMesh mesh in ObjetosMesh) {
                 if (TgcCollisionUtils.intersectRayAABB(pickingRay.Ray, mesh.BoundingBox, out collisionPoint)) {

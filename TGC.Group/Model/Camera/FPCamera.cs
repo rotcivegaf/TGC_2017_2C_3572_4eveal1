@@ -11,7 +11,6 @@ using TGC.Core.Geometry;
 
 namespace TGC.Group.Model.Camera{
     public class FPCamera : TgcCamera{
-        public float AUX;
         private readonly Point mouseCenter; //Centro de mause 2D para ocultarlo.
         private Matrix cameraRotation;//Se mantiene la matriz rotacion para no hacer este calculo cada vez.
         private Vector3 directionView;//Direction view se calcula a partir de donde se quiere ver con la camara inicialmente. por defecto se ve en -Z.
