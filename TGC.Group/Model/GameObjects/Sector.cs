@@ -158,7 +158,7 @@ namespace TGC.Group.Model.GameObjects {
             foreach (TgcMesh mesh in ObjetosMesh) {
                 mesh.Effect.SetValue("time", ElapsedTime);
                 mesh.render();
-                mesh.BoundingBox.render();
+                //mesh.BoundingBox.render();
             }
         }
 

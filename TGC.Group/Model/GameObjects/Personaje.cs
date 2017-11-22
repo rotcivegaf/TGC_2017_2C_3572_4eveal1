@@ -26,10 +26,34 @@ namespace TGC.Group.Model.GameObject{
             }
         }
 
+        public void updateTemp(float delta) {
+            if(delta < 0.55) {
+                temperatura += 0.01f;
+            } else {
+                temperatura -= 0.01f;
+            }
+
+            if (temperatura > 100)
+                temperatura = 100;
+            if (temperatura < 0)
+                temperatura = 0;
+        }
+
+        private float deltaTemp() {
+            float ret;
+            if (temperatura >= 50) {
+                ret = temperatura - 50;
+            } else {
+                ret = 50 - temperatura;
+            }
+            
+            return ret / 15;
+        }
+
         public void trabajo(float cansancio, float sed, float hambre) {
-            this.cansancio -= cansancio;
-            this.sed -= sed;
-            this.hambre -= hambre;
+            this.cansancio -= cansancio + deltaTemp();
+            this.sed -= sed + deltaTemp();
+            this.hambre -= hambre + deltaTemp();
             if (cansancio < 0)
                 cansancio = 0;
             if (sed < 0)

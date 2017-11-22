@@ -139,6 +139,7 @@ namespace TGC.Group.Model{
         //Se llama en cada frame. Se debe escribir toda la lógica de computo del modelo, así como también verificar entradas del usuario y reacciones ante ellas.
         public override void Update() {
             hora.updateTime(ElapsedTime);
+            personaje.updateTemp(hora.toScaleFactor());
             PreUpdate();
             if (!gameStart) {
                 switch (menu.seleccionar(Input)) {
@@ -194,10 +195,9 @@ namespace TGC.Group.Model{
         private void drawLastProcess(Microsoft.DirectX.Direct3D.Device d3dDevice) {
             d3dDevice.BeginScene();
 
-            DrawText.drawText("Camera pos: " + Core.Utils.TgcParserUtils.printVector3(miCamara.Position), 15, 20, System.Drawing.Color.Red);
-            DrawText.drawText("Camera LookAt: " + Core.Utils.TgcParserUtils.printVector3(miCamara.LookAt - miCamara.Position), 15, 40, System.Drawing.Color.Red);
-            //DrawText.drawText("TV: " + mapa.sectores[4].AUX, 15, 60, System.Drawing.Color.Red);
-
+            // DrawText.drawText("Camera pos: " + Core.Utils.TgcParserUtils.printVector3(miCamara.Position), 15, 20, System.Drawing.Color.Red);
+            //DrawText.drawText("Camera LookAt: " + Core.Utils.TgcParserUtils.printVector3(miCamara.LookAt - miCamara.Position), 15, 40, System.Drawing.Color.Red);
+            DrawText.drawText("Camera LookAt: " + personaje.temperatura, 15, 40, System.Drawing.Color.Red);
             gui.render(DrawText, formPrincipal);
 
             d3dDevice.EndScene();
@@ -281,7 +281,7 @@ namespace TGC.Group.Model{
             optimizador.renderMap(tiempoViento2*100);
 
             mapa.SkyBox.Center = miCamara.Position + new Vector3(-mapa.SkyBox.Size.X / 2, 0, -mapa.SkyBox.Size.Z / 2);
-            miCamara.CameraBox.BoundingBox.render();
+            //miCamara.CameraBox.BoundingBox.render();
 
             if (!gameStart)
                 menu.render();
