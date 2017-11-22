@@ -23,16 +23,13 @@ namespace TGC.Group.Model._2D {
 
         public CustomSprite banana;
         public CustomSprite piedra;
-        public CustomSprite agua;
         public CustomSprite madera;
 
         public GUI(Personaje personaje, Vector3 posCamara, string mediaDir) {
             this.personaje = personaje;
             this.mediaDir = mediaDir;
             drawer2D = new Drawer2D();
-
-
-            agua = drawer2D.load(mediaDir + "2D\\agua.png", new Vector2(0, 0), new Vector2(257, 515), new Vector2(30, 470), new Vector2(0.2f, 0.1f));
+            
             banana = drawer2D.load(mediaDir + "2D\\banana.png", new Vector2(0, 0), new Vector2(500, 400), new Vector2(25, 520), new Vector2(0.13f, 0.17f));
             piedra = drawer2D.load(mediaDir + "2D\\roca.png", new Vector2(0, 0), new Vector2(500, 400), new Vector2(25, 570), new Vector2(0.25f, 0.27f));
             madera = drawer2D.load(mediaDir + "2D\\madera.png", new Vector2(0, 0), new Vector2(500, 400), new Vector2(25, 620), new Vector2(0.13f, 0.18f));
@@ -50,9 +47,7 @@ namespace TGC.Group.Model._2D {
 
         public void render(TgcText2D DrawText, GameForm formPrincipal) {
             drawer2D.BeginDrawSprite();
-
-            DrawText.drawText(""+personaje.inventario.agua, 90, 500, System.Drawing.Color.White);
-            drawer2D.DrawSprite(agua);
+            
             DrawText.drawText("" + personaje.inventario.banana, 90, 550, System.Drawing.Color.White);
             drawer2D.DrawSprite(banana);
             DrawText.drawText("" + personaje.inventario.piedra, 90, 600, System.Drawing.Color.White);

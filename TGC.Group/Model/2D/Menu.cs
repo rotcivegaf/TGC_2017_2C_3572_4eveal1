@@ -38,9 +38,8 @@ namespace TGC.Group.Model._2D {
 
         public void render() {
             botones[bSelec].Effect.SetValue("time", (float)(DateTime.Now.Millisecond * Math.PI));
-            foreach (TgcMesh boton in botones) {
+            foreach (TgcMesh boton in botones)
                 boton.render();
-            }
         }
     }
 }

@@ -18,6 +18,7 @@ using TGC.Core.Interpolation;
 
 namespace TGC.Group.Model{
     public class GameModel: TgcExample {
+        public Hora hora = new Hora(12);
         public Mapa mapa;
         public Optimizador optimizador;
         public Personaje personaje;
@@ -30,6 +31,8 @@ namespace TGC.Group.Model{
 
         public Key lastKey;
         public float tiempoAccion;
+        public float tiempoViento2 = 0;
+        public float tiempoViento;
 
         TgcTexture alarmTexture;
         Microsoft.DirectX.Direct3D.Effect effect;
@@ -39,6 +42,8 @@ namespace TGC.Group.Model{
         private Surface depthStencil;
         private VertexBuffer screenQuadVB;
         private InterpoladorVaiven intVaivenAlarm;
+
+        private bool quit = false;
 
         public GameModel(string mediaDir, string shadersDir, GameForm form) : base(mediaDir, shadersDir) {
             Category = Game.Default.Category;
@@ -133,6 +138,7 @@ namespace TGC.Group.Model{
 
         //Se llama en cada frame. Se debe escribir toda la lógica de computo del modelo, así como también verificar entradas del usuario y reacciones ante ellas.
         public override void Update() {
+            hora.updateTime(ElapsedTime);
             PreUpdate();
             if (!gameStart) {
                 switch (menu.seleccionar(Input)) {
@@ -145,17 +151,18 @@ namespace TGC.Group.Model{
 
                     break;
                     case 2:// quit
-                    this.Dispose();
-                    formPrincipal.Close();
+                    quit = true;
                     return;
                 }
+                return;
             } else {
                 moverMapas();
                 mapa.testCollisions(miCamara, personaje);
                 testPersonaje();
             }
-            if (personaje.hambre <= 0 && personaje.sed <= 0)
-                gameStart = false;
+            if (personaje.hambre <= 0 && personaje.sed <= 0) {
+                restartGame();
+            }
         } 
         ///Se llama cada vez que hay que refrescar la pantalla.
         public override void Render() {
@@ -175,22 +182,74 @@ namespace TGC.Group.Model{
 
             D3DDevice.Instance.Device.SetRenderTarget(0, pOldRT);
             D3DDevice.Instance.Device.DepthStencilSurface = pOldDS;
+                        
+            drawAlarmPostProcess(D3DDevice.Instance.Device);
+            drawNigthPostProcess(D3DDevice.Instance.Device);
 
-            drawPostProcess(D3DDevice.Instance.Device);
+            drawLastProcess(D3DDevice.Instance.Device);
+
+            D3DDevice.Instance.Device.Present();
         }
-        
-        private void drawPostProcess(Microsoft.DirectX.Direct3D.Device d3dDevice) {
+
+        private void drawLastProcess(Microsoft.DirectX.Direct3D.Device d3dDevice) {
+            d3dDevice.BeginScene();
+
+            DrawText.drawText("Camera pos: " + Core.Utils.TgcParserUtils.printVector3(miCamara.Position), 15, 20, System.Drawing.Color.Red);
+            DrawText.drawText("Camera LookAt: " + Core.Utils.TgcParserUtils.printVector3(miCamara.LookAt - miCamara.Position), 15, 40, System.Drawing.Color.Red);
+            //DrawText.drawText("TV: " + mapa.sectores[4].AUX, 15, 60, System.Drawing.Color.Red);
+
+            gui.render(DrawText, formPrincipal);
+
+            d3dDevice.EndScene();
+        }
+
+        private void drawNigthPostProcess(Microsoft.DirectX.Direct3D.Device d3dDevice) {
             d3dDevice.BeginScene();
 
             d3dDevice.VertexFormat = CustomVertex.PositionTextured.Format;
             d3dDevice.SetStreamSource(0, screenQuadVB, 0);
 
-            effect.Technique = "DefaultTechnique";
-            if (gameStart) {
-                if (personaje.hambre < 25 && personaje.sed < 25) {
-                    effect.Technique = "AlarmaTechnique";
-                }
+            effect.Technique = "OscurecerTechnique";
+            effect.SetValue("scaleFactor", hora.toScaleFactor());
+            effect.SetValue("render_target2D", renderTarget2D);
+
+            d3dDevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
+            effect.Begin(FX.None);
+            effect.BeginPass(0);
+            d3dDevice.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
+            effect.EndPass();
+            effect.End();
+
+            RenderFPS();
+            RenderAxis();
+
+            d3dDevice.EndScene();
+
+            if (quit) {
+                this.formPrincipal.ApplicationRunning = false;
+
+                this.formPrincipal.StopCurrentExample();
+
+                //Liberar Device al finalizar la aplicacion
+                D3DDevice.Instance.Dispose();
+                TexturesPool.Instance.clearAll();
+                formPrincipal.Close();
             }
+        }
+
+        private void drawAlarmPostProcess(Microsoft.DirectX.Direct3D.Device d3dDevice) {
+            if (!gameStart)
+                return;
+
+            if (personaje.hambre > 25 && personaje.sed > 25)
+                return;
+
+            d3dDevice.BeginScene();
+
+            d3dDevice.VertexFormat = CustomVertex.PositionTextured.Format;
+            d3dDevice.SetStreamSource(0, screenQuadVB, 0);
+            
+            effect.Technique = "AlarmaTechnique";
             
             effect.SetValue("render_target2D", renderTarget2D);
             effect.SetValue("textura_alarma", alarmTexture.D3dTexture);
@@ -207,20 +266,22 @@ namespace TGC.Group.Model{
             RenderAxis();
 
             d3dDevice.EndScene();
-            d3dDevice.Present();
         }
 
         public void drawSceneToRenderTarget(Microsoft.DirectX.Direct3D.Device d3dDevice) {
             d3dDevice.BeginScene();
 
-            DrawText.drawText("Camera pos: " + Core.Utils.TgcParserUtils.printVector3(miCamara.Position), 15, 20, System.Drawing.Color.Red);
-            DrawText.drawText("Camera LookAt: " + Core.Utils.TgcParserUtils.printVector3(miCamara.LookAt - miCamara.Position), 15, 40, System.Drawing.Color.Red);
-
-            optimizador.renderMap();
+            tiempoViento += ElapsedTime;
+            if (tiempoViento > 0.01f) {
+                tiempoViento2 = ElapsedTime;
+                tiempoViento = 0;
+            } else {
+                
+            }
+            optimizador.renderMap(tiempoViento2*100);
 
             mapa.SkyBox.Center = miCamara.Position + new Vector3(-mapa.SkyBox.Size.X / 2, 0, -mapa.SkyBox.Size.Z / 2);
-            //miCamara.CameraBox.BoundingBox.render();
-            gui.render(DrawText, formPrincipal);
+            miCamara.CameraBox.BoundingBox.render();
 
             if (!gameStart)
                 menu.render();
@@ -230,6 +291,17 @@ namespace TGC.Group.Model{
 
         public override void Dispose() {
             mapa.dispose();
+        }
+
+        private void restartGame() {
+            personaje.sed = 100;
+            personaje.hambre = 100;
+            personaje.cansancio = 100;
+            personaje.temperatura = 50;
+
+            gameStart = false;
+            miCamara.gameStart = false;
+            miCamara.LockCam = !miCamara.LockCam;
         }
 
         public void testPersonaje() {

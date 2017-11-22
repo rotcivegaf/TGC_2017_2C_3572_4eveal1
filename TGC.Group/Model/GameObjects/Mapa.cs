@@ -9,6 +9,7 @@ using TGC.Core.Terrain;
 using TGC.Core.Collision;
 using TGC.Group.Model.Camera;
 using TGC.Group.Model.GameObject;
+using TGC.Core.Shaders;
 
 namespace TGC.Group.Model.GameObjects{
     public class Mapa {
@@ -16,7 +17,7 @@ namespace TGC.Group.Model.GameObjects{
 
         public Vector2 center;
         public TgcSceneLoader Loader;
-        public Microsoft.DirectX.Direct3D.Device Device;
+        public Device Device;
 
         public Sector[] sectores;
         
@@ -29,15 +30,16 @@ namespace TGC.Group.Model.GameObjects{
 
         public Texture terrainTexture;
         public String MediaDir;
-        public String shaderDir;
         public int totalVertices;
+
+        public String shaderDir;
 
         public Mapa(String mediaDir, String shaderDir) {
             Device = D3DDevice.Instance.Device;//Device de DirectX para crear primitivas.
             Loader = new TgcSceneLoader();
-
             this.shaderDir = shaderDir;
             MediaDir = mediaDir;
+
             //Path de Heightmap default del terreno y Modifier para cambiarla
             var currentHeightmap = MediaDir + "b.jpg";
             var currentTexture = MediaDir + "2.jpg";
@@ -47,11 +49,11 @@ namespace TGC.Group.Model.GameObjects{
 
             length = heightmap.GetLength(0) * scaleXZ;
 
-            crearSectores();
            
             var aux = (1.5f) * length;
             center = new Vector2(aux, aux);
             deltaCenter = length / 2;
+            crearSectores();
 
             CreateSkyBox();
         }
@@ -83,12 +85,9 @@ namespace TGC.Group.Model.GameObjects{
             ObjectCreator creador = new ObjectCreator(this);
             sectores = new Sector[9];
 
-            for (int i = 0; i < 3; i++) {
-                for (int j = 0; j < 3; j++) {
-                    sectores[i * 3 + j] = new Sector(new Vector2(i, j), this);
-                    sectores[i * 3 + j].crearObj(creador);
-                }
-            }
+            for (int i = 0; i < 3; i++)
+                for (int j = 0; j < 3; j++)
+                    sectores[i * 3 + j] = new Sector(new Vector2(i, j), this, creador);
 
             List<Sector> tmpS = new List<Sector>(sectores);
         }
@@ -221,12 +220,16 @@ namespace TGC.Group.Model.GameObjects{
         public void testCollisions(FPCamera camara, Personaje personaje) {
             if (personaje.isMoving) {
                 foreach (TgcMesh mesh in sectores[4].ObjetosMesh) {
-                    camara.CameraBox.Position = camara.Position;
-                    if (TgcCollisionUtils.testAABBAABB(camara.CameraBox.BoundingBox, mesh.BoundingBox)) {
-                        camara.Collisioned = true;
-                        return;
-                    } else {
+                    if (mesh.Name == "agua" || mesh.Name == "Pasto" || mesh.Name == "Planta" || mesh.Name == "Planta2" || mesh.Name == "Planta3") {
                         camara.Collisioned = false;
+                    } else {
+                        camara.CameraBox.Position = camara.Position;
+                        if (TgcCollisionUtils.testAABBAABB(camara.CameraBox.BoundingBox, mesh.BoundingBox)) {
+                            camara.Collisioned = true;
+                            return;
+                        } else {
+                            camara.Collisioned = false;
+                        }
                     }
                 }
             }

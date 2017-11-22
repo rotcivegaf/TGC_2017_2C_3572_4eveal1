@@ -68,29 +68,17 @@ namespace TGC.Group.Model.Camera{
                 runningTime += elapsedTime;
                 MovementSpeed = 125;
                 if (runningTime >= 0.1) {
-                    personaje.cansancio -= 0.5f;
-                    personaje.sed -= 0.05f;
-                    personaje.hambre -= 0.025f;
+                    personaje.trabajo(0.5f, 0.05f, 0.025f);
                     runningTime = 0;
                 }
             } else {
                 runningTime += elapsedTime;
                 MovementSpeed = 75;
                 if (runningTime >= 0.2 && personaje.sed > 0 && personaje.hambre > 0) {
-                    personaje.cansancio++;
+                    personaje.trabajoRecuperar();
                     runningTime = 0;
                 }
             }
-
-            if (personaje.sed < 0)
-                personaje.sed = 0;
-            if (personaje.hambre < 0)
-                personaje.hambre = 0;
-            if (personaje.cansancio < 0)
-                personaje.cansancio = 0;
-            if (personaje.cansancio > 100)
-                personaje.cansancio = 100;
-
 
             if (gameStart && (Input.keyPressed(Key.L) || Input.keyPressed(Key.Escape))) {
                 LockCam = !lockCam;

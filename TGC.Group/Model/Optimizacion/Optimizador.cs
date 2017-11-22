@@ -1,23 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
-using Microsoft.DirectX.DirectInput;
-using System.Drawing;
-using TGC.Core.Direct3D;
-using TGC.Core.Example;
-using TGC.Core.Input;
-using TGC.Core.Textures;
-using TGC.Core.Utils;
 using TGC.Group.Model.GameObjects;
-
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TGC.Core.SceneLoader;
-using TGC.Core.Geometry;
 using TGC.Core.Camara;
-using TGC.Group.Model.Camera;
 
 namespace TGC.Group.Model.Optimizacion {
     public class Optimizador {
@@ -51,12 +35,12 @@ namespace TGC.Group.Model.Optimizacion {
             return (dotEsquinas[0] < cosFOV) || (dotEsquinas[1] < cosFOV) || (dotEsquinas[2] < cosFOV) || (dotEsquinas[3] < cosFOV);
         }
 
-        public void renderMap() {
+        public void renderMap(float ElapsedTime) {
             mapa.render();
 
             for(int i = 0; i < mapa.sectores.Length; i++) {
                 if (seVe(camara, mapa.sectores[i])) {
-                    mapa.sectores[i].render();
+                    mapa.sectores[i].render(ElapsedTime);
                 }
             }
         }

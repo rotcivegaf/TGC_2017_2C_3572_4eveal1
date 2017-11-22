@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 using TGC.Core.Collision;
@@ -9,7 +10,6 @@ using TGC.Group.Model.GameObject;
 
 namespace TGC.Group.Model.GameObjects {
     public class Sector {
-        public string AUX;
         public Vector2 numero;
         public Mapa mapa;
         public VertexBuffer vbTerrain;
@@ -22,10 +22,11 @@ namespace TGC.Group.Model.GameObjects {
 
         private Vector3 collisionPoint;
 
-        public Sector(Vector2 numero, Mapa mapa) {
+        public Sector(Vector2 numero, Mapa mapa, ObjectCreator creador) {
             this.numero = numero;
             this.mapa = mapa;
             this.createHeightMapMesh();
+            crearObj(creador);
         }
 
         private Vector3 crearVertice(int i, int j) {
@@ -81,19 +82,20 @@ namespace TGC.Group.Model.GameObjects {
         }
 
         public void crearObj(ObjectCreator creador) {
-            //ObjetosMesh.AddRange(creador.createObjects(5, "Meshes\\Pino\\Pino-TgcScene.xml", 5, numero.X * mapa.length, numero.Y * mapa.length, false));
             float x = numero.X * mapa.length;
             float y = numero.Y * mapa.length;
-            ObjetosMesh.AddRange(creador.createObjects(15, "Meshes\\Pasto\\Pasto-TgcScene.xml", 2, x, y, true));
-            ObjetosMesh.AddRange(creador.createObjects(10, "Meshes\\Planta\\Planta-TgcScene.xml", 10, x, y, true));
-            ObjetosMesh.AddRange(creador.createObjects(10, "Meshes\\Planta2\\Planta2-TgcScene.xml", 20, x, y, true));
-            ObjetosMesh.AddRange(creador.createObjects(10, "Meshes\\Planta3\\Planta3-TgcScene.xml", 10, x, y, true));
-
-            ObjetosMesh.AddRange(creador.createObjects(15, "Meshes\\Roca\\Roca-TgcScene.xml", 10, x, y, false));
-            ObjetosMesh.AddRange(creador.createObjects(5, "Meshes\\Palmera\\Palmera-TgcScene.xml", 10, x, y, false));
-            ObjetosMesh.AddRange(creador.createObjects(5, "Meshes\\Palmera2\\Palmera2-TgcScene.xml", 10, x, y, false));
-            ObjetosMesh.AddRange(creador.createObjects(5, "Meshes\\Palmera3\\Palmera3-TgcScene.xml", 10, x, y, false));
-            ObjetosMesh.AddRange(creador.createObjects(5, "Meshes\\ArbolBananas\\ArbolBananas-TgcScene.xml", 20, x, y, false));
+            ObjetosMesh.AddRange(creador.createObjects(15, "Meshes\\Pasto\\Pasto-TgcScene.xml", 2, x, y, "BendScene"));
+            ObjetosMesh.AddRange(creador.createObjects(10, "Meshes\\Planta\\Planta-TgcScene.xml", 10, x, y, "BendScene"));
+            ObjetosMesh.AddRange(creador.createObjects(10, "Meshes\\Planta2\\Planta2-TgcScene.xml", 20, x, y, "BendScene"));
+            ObjetosMesh.AddRange(creador.createObjects(10, "Meshes\\Planta3\\Planta3-TgcScene.xml", 10, x, y, "BendScene"));
+            
+            ObjetosMesh.AddRange(creador.crearCharco(new Vector3(x + mapa.length/2 - 226, -15, y+ mapa.length/2 - 266)));
+            
+            ObjetosMesh.AddRange(creador.createObjects(15, "Meshes\\Roca\\Roca-TgcScene.xml", 10, x, y, null));
+            ObjetosMesh.AddRange(creador.createObjects(5, "Meshes\\Palmera\\Palmera-TgcScene.xml", 30, x, y, "BendScene"));
+            ObjetosMesh.AddRange(creador.createObjects(5, "Meshes\\Palmera2\\Palmera2-TgcScene.xml", 10, x, y, "BendScene"));
+            ObjetosMesh.AddRange(creador.createObjects(5, "Meshes\\Palmera3\\Palmera3-TgcScene.xml", 10, x, y, "BendScene"));
+            ObjetosMesh.AddRange(creador.createObjects(5, "Meshes\\ArbolBananas\\ArbolBananas-TgcScene.xml", 20, x, y, "BendScene"));
         }
 
         public void mover(float x, float z) {
@@ -111,15 +113,15 @@ namespace TGC.Group.Model.GameObjects {
         }       
 
         public void testPicking(TgcPickingRay pickingRay, Personaje personaje) {
-            personaje.sed -= 0.05f;
-            personaje.hambre -= 0.1f;
-            if (personaje.sed < 0)
-                personaje.sed = 0;
-            if (personaje.hambre < 0)
-                personaje.hambre = 0;
+            personaje.trabajo(0.5f, 0.05f, 0.1f);
 
             foreach (TgcMesh mesh in ObjetosMesh) {
                 if (TgcCollisionUtils.intersectRayAABB(pickingRay.Ray, mesh.BoundingBox, out collisionPoint)) {
+                    if (mesh.Name == "agua") {
+                        personaje.beber();
+                        golpes = 0;
+                        return;
+                    }
                     if (golpes > 2) {
                         if (mesh.Name == "Roca")
                             if (personaje.inventario.piedra < personaje.inventario.maxCant)
@@ -130,9 +132,6 @@ namespace TGC.Group.Model.GameObjects {
                         if (mesh.Name == "Palmera" || mesh.Name == "Palmera2" || mesh.Name == "Palmera3" || mesh.Name == "Planta" || mesh.Name == "Planta2" || mesh.Name == "Planta3")
                             if (personaje.inventario.madera < personaje.inventario.maxCant)
                                 personaje.inventario.madera++;
-                        if (mesh.Name == "agua")//TODO
-                            if (personaje.inventario.agua < personaje.inventario.maxCant)
-                                personaje.inventario.agua++;
                         ObjetosMeshSinRender.Add(mesh);
                         ObjetosMesh.Remove(mesh);
                         golpes = 0;
@@ -146,7 +145,7 @@ namespace TGC.Group.Model.GameObjects {
             }
         }
 
-        public void render() {
+        public void render(float ElapsedTime) {
             D3DDevice.Instance.Device.SetTexture(0, mapa.terrainTexture);
             D3DDevice.Instance.Device.SetTexture(1, null);
             D3DDevice.Instance.Device.Material = D3DDevice.DEFAULT_MATERIAL;
@@ -154,9 +153,12 @@ namespace TGC.Group.Model.GameObjects {
             D3DDevice.Instance.Device.SetStreamSource(0, vbTerrain, 0);
             D3DDevice.Instance.Device.DrawPrimitives(PrimitiveType.TriangleList, 0, mapa.totalVertices / 3);
 
+            
+
             foreach (TgcMesh mesh in ObjetosMesh) {
+                mesh.Effect.SetValue("time", ElapsedTime);
                 mesh.render();
-                //mesh.BoundingBox.render();
+                mesh.BoundingBox.render();
             }
         }
 

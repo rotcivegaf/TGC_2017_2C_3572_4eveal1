@@ -15,7 +15,7 @@ namespace TGC.Group.Form{
         }
         
         private TgcExample Modelo { get; set; }
-        private bool ApplicationRunning { get; set; }
+        public bool ApplicationRunning { get; set; }
         private TgcDirectSound DirectSound { get; set; }
         private TgcD3dInput Input { get; set; }
 

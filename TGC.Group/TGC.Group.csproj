@@ -97,6 +97,7 @@
     <Compile Include="Model\2D\Menu.cs" />
     <Compile Include="Model\Camera\FPCamera.cs" />
     <Compile Include="Model\GameModel.cs" />
+    <Compile Include="Model\GameObjects\Hora.cs" />
     <Compile Include="Model\GameObjects\Inventario.cs" />
     <Compile Include="Model\GameObjects\Mapa.cs" />
     <Compile Include="Model\GameObjects\ObjectCreator.cs" />
@@ -178,8 +179,10 @@
     <None Include="Media\survivalcraft-logo.png" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Shaders\Demos.fx" />
     <Content Include="Shaders\PostProcess.fx" />
     <Content Include="Shaders\rotarEjeX.fx" />
+    <Content Include="Shaders\zBuffer.fx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
