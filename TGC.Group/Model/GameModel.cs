@@ -77,8 +77,7 @@ namespace TGC.Group.Model{
             intVaivenAlarm.Speed = 5;
             intVaivenAlarm.reset();
 
-            CustomVertex.PositionTextured[] screenQuadVertices =
-            {
+            CustomVertex.PositionTextured[] screenQuadVertices ={
                 new CustomVertex.PositionTextured(-1, 1, 1, 0, 0),
                 new CustomVertex.PositionTextured(1, 1, 1, 1, 0),
                 new CustomVertex.PositionTextured(-1, -1, 1, 0, 1),
@@ -118,21 +117,17 @@ namespace TGC.Group.Model{
         }
 
         private void moverMapas() {
-            if (miCamara.Position.X > mapa.center.X + mapa.deltaCenter) {// izquierda
+            if (miCamara.Position.X > mapa.center.X + mapa.deltaCenter)// izquierda
                 mapa.moverSectores(0);
-            } else {
-                if (miCamara.Position.X < mapa.center.X - mapa.deltaCenter) {// derecha
+            else
+                if (miCamara.Position.X < mapa.center.X - mapa.deltaCenter)// derecha
                     mapa.moverSectores(1);
-                } else {
-                    if (miCamara.Position.Z > mapa.center.Y + mapa.deltaCenter) {// abajo
+                else
+                    if (miCamara.Position.Z > mapa.center.Y + mapa.deltaCenter)// abajo
                         mapa.moverSectores(2);
-                    } else {
-                        if (miCamara.Position.Z < mapa.center.Y - mapa.deltaCenter) {// arriba
+                    else
+                        if (miCamara.Position.Z < mapa.center.Y - mapa.deltaCenter)// arriba
                             mapa.moverSectores(3);
-                        }
-                    }
-                }
-            }
         }
 
 

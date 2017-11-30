@@ -39,22 +39,17 @@ namespace TGC.Group.Model.GameObjects{
             Loader = new TgcSceneLoader();
             this.shaderDir = shaderDir;
             MediaDir = mediaDir;
-
             //Path de Heightmap default del terreno y Modifier para cambiarla
-            var currentHeightmap = MediaDir + "b.jpg";
-            var currentTexture = MediaDir + "2.jpg";
+            var currentHeightmap = MediaDir + "heightmap.jpg";
+            var currentTexture = MediaDir + "texture.jpg";
             terrainTexture = loadTerrainTexture(Device, currentTexture);
             heightmap = loadHeightMap(currentHeightmap);
             totalVertices = 2 * 3 * heightmap.GetLength(0) * heightmap.GetLength(1);
-
             length = heightmap.GetLength(0) * scaleXZ;
-
-           
             var aux = (1.5f) * length;
             center = new Vector2(aux, aux);
             deltaCenter = length / 2;
             crearSectores();
-
             CreateSkyBox();
         }
 

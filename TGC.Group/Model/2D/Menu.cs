@@ -14,9 +14,9 @@ namespace TGC.Group.Model._2D {
         public Menu(ObjectCreator objectCreator, Vector3 posCamara) {
             this.objectCreator = objectCreator;
 
-            botones.Add(objectCreator.dibujaBoton(posCamara + new Vector3(5, 20, -120), "CajaPlay\\CajaVerde-TgcScene.xml", new Vector3(1.5f, 0.3f, 0.1f)));
-            botones.Add(objectCreator.dibujaBoton(posCamara + new Vector3(-5, 5, -120), "Caja\\CajaVerde-TgcScene.xml", new Vector3(1.5f, 0.3f, 0.1f)));
-            botones.Add(objectCreator.dibujaBoton(posCamara + new Vector3(5, -10, -120), "CajaQuit\\CajaVerde-TgcScene.xml", new Vector3(1.5f, 0.3f, 0.1f)));
+            botones.Add(objectCreator.dibujaBoton(posCamara + new Vector3(5, 20, -120), "Menu\\CajaPlay\\CajaVerde-TgcScene.xml", new Vector3(1.5f, 0.3f, 0.1f)));
+            botones.Add(objectCreator.dibujaBoton(posCamara + new Vector3(-5, 5, -120), "Menu\\CajaOpcion\\CajaVerde-TgcScene.xml", new Vector3(1.5f, 0.3f, 0.1f)));
+            botones.Add(objectCreator.dibujaBoton(posCamara + new Vector3(5, -10, -120), "Menu\\CajaQuit\\CajaVerde-TgcScene.xml", new Vector3(1.5f, 0.3f, 0.1f)));
         }
 
         public int seleccionar(TgcD3dInput input) {
@@ -29,9 +29,8 @@ namespace TGC.Group.Model._2D {
                 if (input.keyPressed(Microsoft.DirectX.DirectInput.Key.S))
                     bSelec = (++bSelec) % 3;
 
-            if (input.keyPressed(Microsoft.DirectX.DirectInput.Key.Return)) {
+            if (input.keyPressed(Microsoft.DirectX.DirectInput.Key.Return))
                 return bSelec;
-            }
 
             return -1;
         }
