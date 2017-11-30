@@ -47,13 +47,14 @@ namespace TGC.Group.Model.GameObject{
                 ret = 50 - temperatura;
             }
             
-            return ret / 15;
+            return ret / 35;
         }
 
         public void trabajo(float cansancio, float sed, float hambre) {
-            this.cansancio -= cansancio + deltaTemp();
-            this.sed -= sed + deltaTemp();
-            this.hambre -= hambre + deltaTemp();
+            var temp = deltaTemp();
+            this.cansancio -= cansancio + temp;
+            this.sed -= sed + deltaTemp() + temp;
+            this.hambre -= hambre + temp;
             if (cansancio < 0)
                 cansancio = 0;
             if (sed < 0)

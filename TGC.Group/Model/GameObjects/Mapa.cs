@@ -165,36 +165,39 @@ namespace TGC.Group.Model.GameObjects{
             SkyBox.render();
         }
 
-        public void moverSectores(int dir) {
+        public void moverSectores(FPCamera camara) {
             var delta = (heightmap.GetLength(0) - 1) * scaleXZ * 3;
             var deltaX = delta;
             var deltaY = delta;
             int[] s = null;
             int[] np = null;
 
-            switch (dir) {
-                case 0:
-                    deltaY = 0;
-                    s = new int[3] { 0, 1, 2 };
-                    np = new int[9] { 3, 4, 5, 6, 7, 8, 0, 1, 2 };
-                    break;
-                case 1:
+            if (camara.Position.X > center.X + deltaCenter) {// izquierda
+                deltaY = 0;
+                s = new int[3] { 0, 1, 2 };
+                np = new int[9] { 3, 4, 5, 6, 7, 8, 0, 1, 2 };
+            } else {
+                if (camara.Position.X < center.X - deltaCenter) {// derecha
                     deltaX *= -1;
                     deltaY = 0;
                     s = new int[3] { 6, 7, 8 };
                     np = new int[9] { 6, 7, 8, 0, 1, 2, 3, 4, 5 };
-                    break;
-                case 2:
-                    deltaX = 0;
-                    s = new int[3] { 0, 3, 6 };
-                    np = new int[9] { 1, 2, 0, 4, 5, 3, 7, 8, 6 };
-                    break;
-                case 3:
-                    deltaX = 0;
-                    deltaY *= -1;
-                    s = new int[3] { 2, 5, 8 };
-                    np = new int[9] { 2, 0, 1, 5, 3, 4, 8, 6, 7 };
-                    break;
+                } else {
+                    if (camara.Position.Z > center.Y + deltaCenter) {// abajo
+                        deltaX = 0;
+                        s = new int[3] { 0, 3, 6 };
+                        np = new int[9] { 1, 2, 0, 4, 5, 3, 7, 8, 6 };
+                    } else {
+                        if (camara.Position.Z < center.Y - deltaCenter) {// arriba
+                            deltaX = 0;
+                            deltaY *= -1;
+                            s = new int[3] { 2, 5, 8 };
+                            np = new int[9] { 2, 0, 1, 5, 3, 4, 8, 6, 7 };
+                        } else {
+                            return;
+                        }
+                    }
+                }
             }
             center += new Vector2(deltaX / 3, deltaY / 3);
             sectores[s[0]].mover(deltaX, deltaY);

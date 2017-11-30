@@ -29,7 +29,6 @@ namespace TGC.Group.Model{
         public GUI gui;
         private TgcPickingRay pickingRay;
 
-        public Key lastKey;
         public float tiempoAccion;
         public float tiempoViento2 = 0;
         public float tiempoViento;
@@ -70,6 +69,10 @@ namespace TGC.Group.Model{
             menu = new Menu(OC, auxV3);
             pickingRay = new TgcPickingRay(Input);
 
+            crearEfectoAlarma();
+        }
+
+        private void crearEfectoAlarma() {
 
             intVaivenAlarm = new InterpoladorVaiven();
             intVaivenAlarm.Min = 0;
@@ -107,7 +110,7 @@ namespace TGC.Group.Model{
 
             //Cargar textura que se va a dibujar arriba de la escena del Render Target
             alarmTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + "Textures\\efecto_alarma.png");
-            
+
             // SkyBox: Se cambia el valor por defecto del farplane para evitar cliping de farplane.
             D3DDevice.Instance.Device.Transform.Projection =
                 Matrix.PerspectiveFovLH(D3DDevice.Instance.FieldOfView,
@@ -115,21 +118,6 @@ namespace TGC.Group.Model{
                     D3DDevice.Instance.ZNearPlaneDistance,
                     D3DDevice.Instance.ZFarPlaneDistance * 2560f);
         }
-
-        private void moverMapas() {
-            if (miCamara.Position.X > mapa.center.X + mapa.deltaCenter)// izquierda
-                mapa.moverSectores(0);
-            else
-                if (miCamara.Position.X < mapa.center.X - mapa.deltaCenter)// derecha
-                    mapa.moverSectores(1);
-                else
-                    if (miCamara.Position.Z > mapa.center.Y + mapa.deltaCenter)// abajo
-                        mapa.moverSectores(2);
-                    else
-                        if (miCamara.Position.Z < mapa.center.Y - mapa.deltaCenter)// arriba
-                            mapa.moverSectores(3);
-        }
-
 
         //Se llama en cada frame. Se debe escribir toda la lógica de computo del modelo, así como también verificar entradas del usuario y reacciones ante ellas.
         public override void Update() {
@@ -152,7 +140,7 @@ namespace TGC.Group.Model{
                 }
                 return;
             } else {
-                moverMapas();
+                mapa.moverSectores(miCamara);
                 mapa.testCollisions(miCamara, personaje);
                 testPersonaje();
             }
@@ -190,9 +178,9 @@ namespace TGC.Group.Model{
         private void drawLastProcess(Microsoft.DirectX.Direct3D.Device d3dDevice) {
             d3dDevice.BeginScene();
 
-            // DrawText.drawText("Camera pos: " + Core.Utils.TgcParserUtils.printVector3(miCamara.Position), 15, 20, System.Drawing.Color.Red);
-            //DrawText.drawText("Camera LookAt: " + Core.Utils.TgcParserUtils.printVector3(miCamara.LookAt - miCamara.Position), 15, 40, System.Drawing.Color.Red);
-            DrawText.drawText("Camera LookAt: " + personaje.temperatura, 15, 40, System.Drawing.Color.Red);
+            DrawText.drawText("Camera pos: " + Core.Utils.TgcParserUtils.printVector3(miCamara.Position), 15, 20, System.Drawing.Color.Red);
+            DrawText.drawText("Camera LookAt: " + Core.Utils.TgcParserUtils.printVector3(miCamara.LookAt - miCamara.Position), 15, 40, System.Drawing.Color.Red);
+            //DrawText.drawText("Camera LookAt: " + personaje.temperatura, 15, 40, System.Drawing.Color.Red);
             gui.render(DrawText, formPrincipal);
 
             d3dDevice.EndScene();
@@ -308,13 +296,7 @@ namespace TGC.Group.Model{
                 tiempoAccion = 0;
             }
             if (Input.keyDown(Key.D1) && tiempoAccion > 0.2f) {
-                personaje.beber();
-                lastKey = Key.D1;
-                tiempoAccion = 0;
-            }
-            if (Input.keyDown(Key.D2) && tiempoAccion > 0.2f) {
                 personaje.comer();
-                lastKey = Key.D2;
                 tiempoAccion = 0;
             }
         }
