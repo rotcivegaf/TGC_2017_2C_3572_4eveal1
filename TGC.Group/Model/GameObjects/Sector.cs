@@ -84,18 +84,18 @@ namespace TGC.Group.Model.GameObjects {
         public void crearObj(ObjectCreator creador) {
             float x = numero.X * mapa.length;
             float y = numero.Y * mapa.length;
-            ObjetosMesh.AddRange(creador.createObjects(15, "Meshes\\Pasto\\Pasto-TgcScene.xml", 2, x, y, "BendScene"));
-            ObjetosMesh.AddRange(creador.createObjects(10, "Meshes\\Planta\\Planta-TgcScene.xml", 10, x, y, "BendScene"));
-            ObjetosMesh.AddRange(creador.createObjects(10, "Meshes\\Planta2\\Planta2-TgcScene.xml", 20, x, y, "BendScene"));
-            ObjetosMesh.AddRange(creador.createObjects(10, "Meshes\\Planta3\\Planta3-TgcScene.xml", 10, x, y, "BendScene"));
+            ObjetosMesh.AddRange(creador.createObjects(15, "Meshes\\Pasto\\Pasto-TgcScene.xml", 2, x, y, "Wind"));
+            ObjetosMesh.AddRange(creador.createObjects(10, "Meshes\\Planta\\Planta-TgcScene.xml", 10, x, y, "Wind"));
+            ObjetosMesh.AddRange(creador.createObjects(10, "Meshes\\Planta2\\Planta2-TgcScene.xml", 20, x, y, "Wind"));
+            ObjetosMesh.AddRange(creador.createObjects(10, "Meshes\\Planta3\\Planta3-TgcScene.xml", 10, x, y, "Wind"));
             
             ObjetosMesh.AddRange(creador.crearCharco(new Vector3(x + mapa.length/2 - 226, -15, y+ mapa.length/2 - 266)));
             
             ObjetosMesh.AddRange(creador.createObjects(15, "Meshes\\Roca\\Roca-TgcScene.xml", 10, x, y, null));
-            ObjetosMesh.AddRange(creador.createObjects(5, "Meshes\\Palmera\\Palmera-TgcScene.xml", 30, x, y, "BendScene"));
-            ObjetosMesh.AddRange(creador.createObjects(5, "Meshes\\Palmera2\\Palmera2-TgcScene.xml", 10, x, y, "BendScene"));
-            ObjetosMesh.AddRange(creador.createObjects(5, "Meshes\\Palmera3\\Palmera3-TgcScene.xml", 10, x, y, "BendScene"));
-            ObjetosMesh.AddRange(creador.createObjects(5, "Meshes\\ArbolBananas\\ArbolBananas-TgcScene.xml", 20, x, y, "BendScene"));
+            ObjetosMesh.AddRange(creador.createObjects(5, "Meshes\\Palmera\\Palmera-TgcScene.xml", 30, x, y, "Wind"));
+            ObjetosMesh.AddRange(creador.createObjects(5, "Meshes\\Palmera2\\Palmera2-TgcScene.xml", 10, x, y, "Wind"));
+            ObjetosMesh.AddRange(creador.createObjects(5, "Meshes\\Palmera3\\Palmera3-TgcScene.xml", 10, x, y, "Wind"));
+            ObjetosMesh.AddRange(creador.createObjects(5, "Meshes\\ArbolBananas\\ArbolBananas-TgcScene.xml", 20, x, y, "Wind"));
         }
 
         public void mover(float x, float z) {

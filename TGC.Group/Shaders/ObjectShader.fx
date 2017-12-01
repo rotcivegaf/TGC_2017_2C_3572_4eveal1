@@ -74,13 +74,10 @@ struct VS_OUTPUT{
 //Vertex Shader default
 VS_OUTPUT vs_default(VS_INPUT Input){
 	VS_OUTPUT Output;
-
 	//Proyectar posicion
 	Output.Position = mul(Input.Position, matWorldViewProj);
-
 	//Propago las coordenadas de textura
 	Output.Texcoord = Input.Texcoord;
-
 	//Propago el color x vertice
 	Output.Color = Input.Color;
 
@@ -92,13 +89,10 @@ VS_OUTPUT vs_wind(VS_INPUT Input){
 	VS_OUTPUT Output;
 
 	ApplyMainBending(Input.Position, wind, bendFactor);
-
 	//Proyectar posicion
 	Output.Position = mul(Input.Position, matWorldViewProj);
-
 	//Propago las coordenadas de textura
 	Output.Texcoord = Input.Texcoord;
-
 	//Propago el color x vertice
 	Output.Color = Input.Color;
 
@@ -131,7 +125,7 @@ technique Default{
 	}
 }
 
-technique BendScene{
+technique Wind{
 	pass Pass_0 {
 		VertexShader = compile vs_3_0 vs_wind();
 		PixelShader = compile ps_3_0 ps_main_wind();

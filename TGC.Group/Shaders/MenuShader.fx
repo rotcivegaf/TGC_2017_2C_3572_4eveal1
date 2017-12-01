@@ -10,8 +10,7 @@ float4x4 matInverseTransposeWorld; //Matriz Transpose(Invert(World))
 
 //Textura para DiffuseMap
 texture texDiffuseMap;
-sampler2D diffuseMap = sampler_state
-{
+sampler2D diffuseMap = sampler_state{
 	Texture = (texDiffuseMap);
 	ADDRESSU = WRAP;
 	ADDRESSV = WRAP;
@@ -27,23 +26,20 @@ float time = 0;
 /**************************************************************************************/
 
 //Input del Vertex Shader
-struct VS_INPUT
-{
+struct VS_INPUT{
 	float4 Position : POSITION0;
 	float4 Color : COLOR0;
 	float2 Texcoord : TEXCOORD0;
 };
 
 //Output del Vertex Shader
-struct VS_OUTPUT
-{
+struct VS_OUTPUT{
 	float4 Position :        POSITION0;
 	float2 Texcoord :        TEXCOORD0;
 	float4 Color :			COLOR0;
 };
 
-VS_OUTPUT vs_main2(VS_INPUT Input)
-{
+VS_OUTPUT vs_main2(VS_INPUT Input){
 	VS_OUTPUT Output;
 	
 	Input.Position.y = sin(time/500) + Input.Position.y;
@@ -60,17 +56,14 @@ VS_OUTPUT vs_main2(VS_INPUT Input)
 }
 
 //Pixel Shader
-float4 ps_main(float2 Texcoord: TEXCOORD0, float4 Color : COLOR0) : COLOR0
-{
+float4 ps_main(float2 Texcoord: TEXCOORD0, float4 Color : COLOR0) : COLOR0{
 	float4 fvBaseColor = tex2D(diffuseMap, Texcoord);
 	return fvBaseColor;
 }
 
 // ------------------------------------------------------------------
-technique RenderScene
-{
-	pass Pass_0
-	{
+technique upDown{
+	pass Pass_0{
 		VertexShader = compile vs_2_0 vs_main2();
 		PixelShader = compile ps_2_0 ps_main();
 	}

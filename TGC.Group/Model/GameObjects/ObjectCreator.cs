@@ -14,7 +14,7 @@ namespace TGC.Group.Model.GameObjects {
 
         public ObjectCreator(Mapa mapa) {
             this.mapa = mapa;
-            effect = TgcShaders.loadEffect(mapa.shaderDir + "Demos.fx");
+            effect = TgcShaders.loadEffect(mapa.shaderDir + "ObjectShader.fx");
         }
 
         public Vector3 getRandomPositionVector(float deltaY, float xIni, float zIni) {
@@ -40,8 +40,8 @@ namespace TGC.Group.Model.GameObjects {
             boton.Position = pos;
             boton.Transform = Matrix.Scaling(boton.Scale) * Matrix.Translation(boton.Position);
             boton.AlphaBlendEnable = true;
-            boton.Effect = TgcShaders.loadEffect(mapa.shaderDir + "rotarEjeX.fx");
-            boton.Technique = "RenderScene";
+            boton.Effect = TgcShaders.loadEffect(mapa.shaderDir + "MenuShader.fx");
+            boton.Technique = "upDown";
 
             return boton;
         }

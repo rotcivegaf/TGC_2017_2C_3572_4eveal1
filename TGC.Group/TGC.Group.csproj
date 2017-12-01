@@ -153,9 +153,6 @@
     <None Include="Shaders\TgcSkeletalMeshShader.fx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Shaders\Varios.fx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -179,9 +176,10 @@
     <None Include="Media\survivalcraft-logo.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Shaders\Demos.fx" />
+    <Content Include="Shaders\ObjectShader.fx" />
     <Content Include="Shaders\PostProcess.fx" />
-    <Content Include="Shaders\rotarEjeX.fx" />
+    <Content Include="Shaders\MenuShader.fx" />
+    <Content Include="Shaders\Varios.fx" />
     <Content Include="Shaders\zBuffer.fx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
