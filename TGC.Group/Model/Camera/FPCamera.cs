@@ -8,6 +8,7 @@ using Microsoft.DirectX.DirectInput;
 using TGC.Group.Model.GameObjects;
 using TGC.Group.Model.GameObject;
 using TGC.Core.Geometry;
+using System;
 
 namespace TGC.Group.Model.Camera{
     public class FPCamera : TgcCamera{
@@ -29,6 +30,7 @@ namespace TGC.Group.Model.Camera{
         public float JumpSpeed { get; set; }
         public TgcBox CameraBox { get; set; } = TgcBox.fromExtremes(new Vector3(0, 0, 0), new Vector3(2, 2, 2));
         public bool Collisioned { get; set; } = false;
+        public double deltaY = 0;
 
         private float runningTime = 0;
 
@@ -100,8 +102,17 @@ namespace TGC.Group.Model.Camera{
                 Cursor.Position = mouseCenter;
 
             //aca esta la papa
-            var posY = mapa.getY(positionEye.X, positionEye.Z);
+            if (deltaY > 360)
+                deltaY = 0;
 
+            if (personaje.isMoving) {
+                deltaY += elapsedTime * (MovementSpeed / 5);
+            } else {
+                deltaY += elapsedTime;
+            }
+
+            var posY = mapa.getY(positionEye.X, positionEye.Z) + (Math.Sin(deltaY)/2);
+            
             if (positionEye.Y != posY)
                 positionEye.Y = (float)posY;
 
