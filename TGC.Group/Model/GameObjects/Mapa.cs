@@ -159,6 +159,18 @@ namespace TGC.Group.Model.GameObjects{
 
             return heightmap;
         }
+        
+        public void update(Vector3 posicionCamara, float elapsedTime) {
+            foreach (TgcMesh face in SkyBox.Faces) {
+                face.AutoTransformEnable = true;
+                //face.rotateY(elapsedTime );
+                //face.Transform = Matrix.RotationY(elapsedTime);// * Matrix.Translation(posicionCamara + new Vector3(-SkyBox.Size.X / 2, 0, -SkyBox.Size.Z / 2));
+            }
+            foreach (TgcMesh face in SkyBox.Faces)
+                face.AutoTransformEnable = false;
+             
+            SkyBox.Center = posicionCamara - new Vector3(SkyBox.Size.X / 2, 0, SkyBox.Size.Z / 2);
+        }
 
         public void render() {
             D3DDevice.Instance.Device.Transform.World = Matrix.Identity;

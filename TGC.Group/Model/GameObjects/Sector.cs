@@ -16,6 +16,11 @@ namespace TGC.Group.Model.GameObjects {
         public CustomVertex.PositionTextured[] data;
         public List<TgcMesh> ObjetosMesh = new List<TgcMesh>();
         public List<TgcMesh> ObjetosMeshSinRender = new List<TgcMesh>();
+        public float[] randomVectorX = {0,  0, 1, -1, 0.71f, -0.71f,  0.71f};
+        public float[] randomVectorY = {1, -1, 0,  0, 0.71f,  0.71f, -0.71f};
+        public int iVector = 5;
+        public int iVectorOld = 0;
+        public Random random = new Random();
 
         public TgcMesh meshAnterior = null;
         public int golpes = 0;
@@ -145,18 +150,29 @@ namespace TGC.Group.Model.GameObjects {
             }
         }
 
-        public void render(float ElapsedTime) {
+        public void render(float ElapsedTime, Hora hora) {
             D3DDevice.Instance.Device.SetTexture(0, mapa.terrainTexture);
             D3DDevice.Instance.Device.SetTexture(1, null);
             D3DDevice.Instance.Device.Material = D3DDevice.DEFAULT_MATERIAL;
             D3DDevice.Instance.Device.VertexFormat = CustomVertex.PositionTextured.Format;
             D3DDevice.Instance.Device.SetStreamSource(0, vbTerrain, 0);
             D3DDevice.Instance.Device.DrawPrimitives(PrimitiveType.TriangleList, 0, mapa.totalVertices / 3);
-
             
+            /*if (hora.to12() % 6 <= 0.2 && iVector != iVectorOld) {
+                iVectorOld = iVector;
+                iVector = random.Next(0, 7);
+            } else {
+                iVectorOld = -1;
+            }*/
 
+            //var intencidad = (int)hora.toNormalScaleFactor() / (float)30;
+            var intencidad = (int)2 / (float)30;
             foreach (TgcMesh mesh in ObjetosMesh) {
+                
                 mesh.Effect.SetValue("time", ElapsedTime);
+                mesh.Effect.SetValue("windIntencidad", intencidad);
+                mesh.Effect.SetValue("windNormalX", randomVectorX[iVector]);
+                mesh.Effect.SetValue("windNormalZ", randomVectorY[iVector]);
                 mesh.render();
                 //mesh.BoundingBox.render();
             }

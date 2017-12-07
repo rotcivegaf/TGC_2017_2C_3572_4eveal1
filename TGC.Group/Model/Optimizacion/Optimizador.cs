@@ -8,6 +8,7 @@ namespace TGC.Group.Model.Optimizacion {
         public double cosFOV = Math.Cos(75);
         public Mapa mapa;
         public TgcCamera camara;
+        public float time = 0;
 
         public Optimizador(Mapa mapa, TgcCamera camara) {
             this.mapa = mapa;
@@ -35,12 +36,13 @@ namespace TGC.Group.Model.Optimizacion {
             return (dotEsquinas[0] < cosFOV) || (dotEsquinas[1] < cosFOV) || (dotEsquinas[2] < cosFOV) || (dotEsquinas[3] < cosFOV);
         }
 
-        public void renderMap(float ElapsedTime) {
+        public void renderMap(float ElapsedTime, Hora hora) {
             mapa.render();
+            time += ElapsedTime;
 
             for(int i = 0; i < mapa.sectores.Length; i++) {
                 if (seVe(camara, mapa.sectores[i])) {
-                    mapa.sectores[i].render(ElapsedTime);
+                    mapa.sectores[i].render(time, hora);
                 }
             }
         }

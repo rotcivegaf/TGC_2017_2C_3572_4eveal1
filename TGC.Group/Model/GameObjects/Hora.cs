@@ -17,12 +17,19 @@
             return aux;
         }
 
+        public float to12() {
+            var aux = toHora() % 12;
+            if (toHora() > 12)
+                aux = 12 - aux;
+            return aux;
+        }
+
         public float toHora() {
             return time % 24;
         }
 
         public void updateTime(float time) {
-            this.time += time/4;
+            this.time += time;/// 4;
         }
     }
 }

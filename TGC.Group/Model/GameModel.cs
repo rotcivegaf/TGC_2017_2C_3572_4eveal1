@@ -30,8 +30,6 @@ namespace TGC.Group.Model{
         private TgcPickingRay pickingRay;
 
         public float tiempoAccion;
-        public float tiempoViento2 = 0;
-        public float tiempoViento;
 
         TgcTexture alarmTexture;
         Microsoft.DirectX.Direct3D.Effect effect;
@@ -147,6 +145,7 @@ namespace TGC.Group.Model{
             if (personaje.hambre <= 0 && personaje.sed <= 0) {
                 restartGame();
             }
+            mapa.update(miCamara.Position, ElapsedTime);
         } 
         ///Se llama cada vez que hay que refrescar la pantalla.
         public override void Render() {
@@ -167,7 +166,6 @@ namespace TGC.Group.Model{
             D3DDevice.Instance.Device.SetRenderTarget(0, pOldRT);
             D3DDevice.Instance.Device.DepthStencilSurface = pOldDS;
                         
-            drawAlarmPostProcess(D3DDevice.Instance.Device);
             drawNigthPostProcess(D3DDevice.Instance.Device);
 
             drawLastProcess(D3DDevice.Instance.Device);
@@ -180,7 +178,7 @@ namespace TGC.Group.Model{
 
             DrawText.drawText("Camera pos: " + Core.Utils.TgcParserUtils.printVector3(miCamara.Position), 15, 20, System.Drawing.Color.Red);
             DrawText.drawText("Camera LookAt: " + Core.Utils.TgcParserUtils.printVector3(miCamara.LookAt - miCamara.Position), 15, 40, System.Drawing.Color.Red);
-            //DrawText.drawText("Camera LookAt: " + personaje.temperatura, 15, 40, System.Drawing.Color.Red);
+            DrawText.drawText("Camera LookAt: " + hora.to12(), 15, 60, System.Drawing.Color.Red);
             gui.render(DrawText, formPrincipal);
 
             d3dDevice.EndScene();
@@ -193,7 +191,9 @@ namespace TGC.Group.Model{
             d3dDevice.SetStreamSource(0, screenQuadVB, 0);
 
             effect.Technique = "OscurecerTechnique";
-            effect.SetValue("scaleFactor", hora.toScaleFactor());
+            //effect.SetValue("scaleFactor", hora.toScaleFactor());
+            effect.SetValue("scaleFactor", 0);
+
             effect.SetValue("render_target2D", renderTarget2D);
 
             d3dDevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
@@ -219,51 +219,11 @@ namespace TGC.Group.Model{
                 formPrincipal.Close();
             }
         }
-
-        private void drawAlarmPostProcess(Microsoft.DirectX.Direct3D.Device d3dDevice) {
-            if (!gameStart)
-                return;
-
-            if (personaje.hambre > 25 && personaje.sed > 25)
-                return;
-
-            d3dDevice.BeginScene();
-
-            d3dDevice.VertexFormat = CustomVertex.PositionTextured.Format;
-            d3dDevice.SetStreamSource(0, screenQuadVB, 0);
-            
-            effect.Technique = "AlarmaTechnique";
-            
-            effect.SetValue("render_target2D", renderTarget2D);
-            effect.SetValue("textura_alarma", alarmTexture.D3dTexture);
-            effect.SetValue("alarmaScaleFactor", intVaivenAlarm.update(ElapsedTime/((personaje.hambre + personaje.sed)/10)));
-
-            d3dDevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
-            effect.Begin(FX.None);
-            effect.BeginPass(0);
-            d3dDevice.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
-            effect.EndPass();
-            effect.End();
-
-            RenderFPS();
-            RenderAxis();
-
-            d3dDevice.EndScene();
-        }
-
+        
         public void drawSceneToRenderTarget(Microsoft.DirectX.Direct3D.Device d3dDevice) {
             d3dDevice.BeginScene();
-
-            tiempoViento += ElapsedTime;
-            if (tiempoViento > 0.01f) {
-                tiempoViento2 = ElapsedTime;
-                tiempoViento = 0;
-            } else {
-                
-            }
-            optimizador.renderMap(tiempoViento2*100);
-
-            mapa.SkyBox.Center = miCamara.Position + new Vector3(-mapa.SkyBox.Size.X / 2, 0, -mapa.SkyBox.Size.Z / 2);
+            optimizador.renderMap(ElapsedTime, hora);
+            
             //miCamara.CameraBox.BoundingBox.render();
 
             if (!gameStart)

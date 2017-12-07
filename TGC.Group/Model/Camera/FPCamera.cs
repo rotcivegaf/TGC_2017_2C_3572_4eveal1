@@ -111,7 +111,7 @@ namespace TGC.Group.Model.Camera{
                 deltaY += elapsedTime;
             }
 
-            var posY = mapa.getY(positionEye.X, positionEye.Z) + (Math.Sin(deltaY)/2);
+            var posY = mapa.getY(positionEye.X, positionEye.Z) + (Math.Sin(deltaY)/4);
             
             if (positionEye.Y != posY)
                 positionEye.Y = (float)posY;

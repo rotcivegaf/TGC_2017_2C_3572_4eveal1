@@ -52,7 +52,7 @@ namespace TGC.Group.Model.GameObjects {
             TgcMesh instance = objeto.createMeshInstance("agua");
 
             instance.Effect = effect;
-            instance.Technique = "Default";
+            instance.Technique = "Agua";
 
             instance.Scale = new Vector3(4,1,4);
             instance.Position = pos;
@@ -77,7 +77,6 @@ namespace TGC.Group.Model.GameObjects {
                 if (tecnica == null) {
                     instance.Technique = "Default";
                 } else {
-                    instance.Effect.SetValue("bendFactor", 0.0009f);
                     instance.Technique = tecnica;
                 }
 
