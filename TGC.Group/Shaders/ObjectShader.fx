@@ -22,7 +22,6 @@ float windNormalX;
 float windNormalZ;
 float windIntencidad;
 
-float4 ColorFog;
 float distCamMesh;
 
 float StartFogDistance;
@@ -68,8 +67,7 @@ float4 ps_main_fog(VS_OUTPUT_VERTEX input) : COLOR0{
 	float4 fvBaseColor = tex2D(diffuseMap, input.Texture);
     // combino fog y textura
     float4 fogFactor = float4(input.Fog, input.Fog, input.Fog, input.Fog);
-    //float4 fvFogColor = (1.0 - fogFactor) * ColorFog;
-    //return fogFactor* fvBaseColor + fvFogColor;
+
     fvBaseColor.a += (1.0 - fogFactor);
     return fogFactor* fvBaseColor; 
 }

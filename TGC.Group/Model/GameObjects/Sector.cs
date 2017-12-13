@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 using TGC.Core.Collision;
 using TGC.Core.Direct3D;
-using TGC.Core.Fog;
 using TGC.Core.Geometry;
 using TGC.Core.SceneLoader;
-using TGC.Core.Utils;
 using TGC.Group.Model.GameObject;
 
 namespace TGC.Group.Model.GameObjects {
@@ -183,8 +180,7 @@ namespace TGC.Group.Model.GameObjects {
             foreach (var mesh in ObjetosMesh) {
 
                 mesh.Effect.SetValue("distCamMesh", ((camPos - new Vector3(0, camPos.Y, 0)) - (mesh.Position - new Vector3(0, mesh.Position.Y, 0))).Length());
-
-                mesh.Effect.SetValue("ColorFog", Color.LightGray.ToArgb());
+                
                 mesh.Effect.SetValue("StartFogDistance", 1300);//1584f);
                 mesh.Effect.SetValue("EndFogDistance", 1500);//1684f);
                 mesh.Effect.SetValue("Density", 0.0025f);
