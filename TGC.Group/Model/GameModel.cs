@@ -14,7 +14,6 @@ using Microsoft.DirectX.Direct3D;
 using System.Drawing;
 using TGC.Core.Shaders;
 using TGC.Core.Textures;
-using TGC.Core.Interpolation;
 
 namespace TGC.Group.Model{
     public class GameModel: TgcExample {
@@ -38,7 +37,6 @@ namespace TGC.Group.Model{
         private Texture renderTarget2D;
         private Surface depthStencil;
         private VertexBuffer screenQuadVB;
-        private InterpoladorVaiven intVaivenAlarm;
 
         private bool quit = false;
 
@@ -58,7 +56,6 @@ namespace TGC.Group.Model{
             var posZ = mapa.center.Y;
             miCamara = new FPCamera(new Vector3(posX, mapa.getY(posX, posZ), posZ), Input, mapa, personaje, gameStart);
             Camara = miCamara;
-
             optimizador = new Optimizador(mapa, miCamara);
 
             var OC = new ObjectCreator(mapa);
@@ -71,13 +68,6 @@ namespace TGC.Group.Model{
         }
 
         private void crearEfectoAlarma() {
-
-            intVaivenAlarm = new InterpoladorVaiven();
-            intVaivenAlarm.Min = 0;
-            intVaivenAlarm.Max = 1;
-            intVaivenAlarm.Speed = 5;
-            intVaivenAlarm.reset();
-
             CustomVertex.PositionTextured[] screenQuadVertices ={
                 new CustomVertex.PositionTextured(-1, 1, 1, 0, 0),
                 new CustomVertex.PositionTextured(1, 1, 1, 1, 0),
@@ -178,7 +168,8 @@ namespace TGC.Group.Model{
 
             DrawText.drawText("Camera pos: " + Core.Utils.TgcParserUtils.printVector3(miCamara.Position), 15, 20, System.Drawing.Color.Red);
             DrawText.drawText("Camera LookAt: " + Core.Utils.TgcParserUtils.printVector3(miCamara.LookAt - miCamara.Position), 15, 40, System.Drawing.Color.Red);
-            DrawText.drawText("Camera LookAt: " + hora.to12(), 15, 60, System.Drawing.Color.Red);
+            DrawText.drawText("Camera LookAt: " + mapa.SkyBox.Size, 15, 80, System.Drawing.Color.Red);
+
             gui.render(DrawText, formPrincipal);
 
             d3dDevice.EndScene();
@@ -191,8 +182,8 @@ namespace TGC.Group.Model{
             d3dDevice.SetStreamSource(0, screenQuadVB, 0);
 
             effect.Technique = "OscurecerTechnique";
-            //effect.SetValue("scaleFactor", hora.toScaleFactor());
-            effect.SetValue("scaleFactor", 0);
+            effect.SetValue("scaleFactor", hora.toScaleFactor());
+
 
             effect.SetValue("render_target2D", renderTarget2D);
 

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 using TGC.Core.Collision;
 using TGC.Core.Direct3D;
+using TGC.Core.Fog;
 using TGC.Core.Geometry;
 using TGC.Core.SceneLoader;
+using TGC.Core.Utils;
 using TGC.Group.Model.GameObject;
 
 namespace TGC.Group.Model.GameObjects {
@@ -16,21 +19,23 @@ namespace TGC.Group.Model.GameObjects {
         public CustomVertex.PositionTextured[] data;
         public List<TgcMesh> ObjetosMesh = new List<TgcMesh>();
         public List<TgcMesh> ObjetosMeshSinRender = new List<TgcMesh>();
-        public float[] randomVectorX = {0,  0, 1, -1, 0.71f, -0.71f,  0.71f};
-        public float[] randomVectorY = {1, -1, 0,  0, 0.71f,  0.71f, -0.71f};
-        public int iVector = 5;
-        public int iVectorOld = 0;
+
+        public int cont = 0;
+        public Vector2 vectorWind = new Vector2(1, 0);
+        public Vector2 vectorWindOld = new Vector2(1,0);
+        public float intencidad = (int)2 / (float)30;
         public Random random = new Random();
 
         public TgcMesh meshAnterior = null;
         public int golpes = 0;
 
         private Vector3 collisionPoint;
+        
 
         public Sector(Vector2 numero, Mapa mapa, ObjectCreator creador) {
             this.numero = numero;
             this.mapa = mapa;
-            this.createHeightMapMesh();
+            createHeightMapMesh();
             crearObj(creador);
         }
 
@@ -89,18 +94,18 @@ namespace TGC.Group.Model.GameObjects {
         public void crearObj(ObjectCreator creador) {
             float x = numero.X * mapa.length;
             float y = numero.Y * mapa.length;
-            ObjetosMesh.AddRange(creador.createObjects(15, "Meshes\\Pasto\\Pasto-TgcScene.xml", 2, x, y, "Wind"));
-            ObjetosMesh.AddRange(creador.createObjects(10, "Meshes\\Planta\\Planta-TgcScene.xml", 10, x, y, "Wind"));
-            ObjetosMesh.AddRange(creador.createObjects(10, "Meshes\\Planta2\\Planta2-TgcScene.xml", 20, x, y, "Wind"));
-            ObjetosMesh.AddRange(creador.createObjects(10, "Meshes\\Planta3\\Planta3-TgcScene.xml", 10, x, y, "Wind"));
+            ObjetosMesh.AddRange(creador.createObjects(15, "Meshes\\Pasto\\Pasto-TgcScene.xml", 2, x, y));
+            ObjetosMesh.AddRange(creador.createObjects(10, "Meshes\\Planta\\Planta-TgcScene.xml", 10, x, y));
+            ObjetosMesh.AddRange(creador.createObjects(10, "Meshes\\Planta2\\Planta2-TgcScene.xml", 20, x, y));
+            ObjetosMesh.AddRange(creador.createObjects(10, "Meshes\\Planta3\\Planta3-TgcScene.xml", 10, x, y));
             
             ObjetosMesh.AddRange(creador.crearCharco(new Vector3(x + mapa.length/2 - 226, -15, y+ mapa.length/2 - 266)));
             
-            ObjetosMesh.AddRange(creador.createObjects(15, "Meshes\\Roca\\Roca-TgcScene.xml", 10, x, y, null));
-            ObjetosMesh.AddRange(creador.createObjects(5, "Meshes\\Palmera\\Palmera-TgcScene.xml", 30, x, y, "Wind"));
-            ObjetosMesh.AddRange(creador.createObjects(5, "Meshes\\Palmera2\\Palmera2-TgcScene.xml", 10, x, y, "Wind"));
-            ObjetosMesh.AddRange(creador.createObjects(5, "Meshes\\Palmera3\\Palmera3-TgcScene.xml", 10, x, y, "Wind"));
-            ObjetosMesh.AddRange(creador.createObjects(5, "Meshes\\ArbolBananas\\ArbolBananas-TgcScene.xml", 20, x, y, "Wind"));
+            ObjetosMesh.AddRange(creador.createRocas(15, "Meshes\\Roca\\Roca-TgcScene.xml", 10, x, y));
+            ObjetosMesh.AddRange(creador.createObjects(5, "Meshes\\Palmera\\Palmera-TgcScene.xml", 30, x, y));
+            ObjetosMesh.AddRange(creador.createObjects(5, "Meshes\\Palmera2\\Palmera2-TgcScene.xml", 10, x, y));
+            ObjetosMesh.AddRange(creador.createObjects(5, "Meshes\\Palmera3\\Palmera3-TgcScene.xml", 10, x, y));
+            ObjetosMesh.AddRange(creador.createObjects(5, "Meshes\\ArbolBananas\\ArbolBananas-TgcScene.xml", 20, x, y));
         }
 
         public void mover(float x, float z) {
@@ -150,30 +155,48 @@ namespace TGC.Group.Model.GameObjects {
             }
         }
 
-        public void render(float ElapsedTime, Hora hora) {
+        public void render(float ElapsedTime, Vector3 camPos) {
             D3DDevice.Instance.Device.SetTexture(0, mapa.terrainTexture);
             D3DDevice.Instance.Device.SetTexture(1, null);
             D3DDevice.Instance.Device.Material = D3DDevice.DEFAULT_MATERIAL;
             D3DDevice.Instance.Device.VertexFormat = CustomVertex.PositionTextured.Format;
             D3DDevice.Instance.Device.SetStreamSource(0, vbTerrain, 0);
             D3DDevice.Instance.Device.DrawPrimitives(PrimitiveType.TriangleList, 0, mapa.totalVertices / 3);
-            
-            /*if (hora.to12() % 6 <= 0.2 && iVector != iVectorOld) {
-                iVectorOld = iVector;
-                iVector = random.Next(0, 7);
-            } else {
-                iVectorOld = -1;
-            }*/
 
-            //var intencidad = (int)hora.toNormalScaleFactor() / (float)30;
-            var intencidad = (int)2 / (float)30;
-            foreach (TgcMesh mesh in ObjetosMesh) {
-                
+            cont++;
+            if (cont > 1000) {
+                cont = 0;
+                vectorWind = new Vector2((float)random.NextDouble() * 2, (float)random.NextDouble() * 2);
+            }
+            if (cont < 100) {
+                float factor = 100;
+                if (vectorWindOld.X > vectorWind.X)
+                    vectorWindOld.X -= vectorWind.X / factor;
+                else
+                    vectorWindOld.X += vectorWind.X / factor;
+                if (vectorWindOld.Y > vectorWind.Y)
+                    vectorWindOld.Y -= vectorWind.Y / factor;
+                else
+                    vectorWindOld.Y += vectorWind.Y / factor;
+            }
+            
+            foreach (var mesh in ObjetosMesh) {
+
+                mesh.Effect.SetValue("distCamMesh", ((camPos - new Vector3(0, camPos.Y, 0)) - (mesh.Position - new Vector3(0, mesh.Position.Y, 0))).Length());
+
+                mesh.Effect.SetValue("ColorFog", Color.LightGray.ToArgb());
+                mesh.Effect.SetValue("StartFogDistance", 1300);//1584f);
+                mesh.Effect.SetValue("EndFogDistance", 1500);//1684f);
+                mesh.Effect.SetValue("Density", 0.0025f);
+
                 mesh.Effect.SetValue("time", ElapsedTime);
                 mesh.Effect.SetValue("windIntencidad", intencidad);
-                mesh.Effect.SetValue("windNormalX", randomVectorX[iVector]);
-                mesh.Effect.SetValue("windNormalZ", randomVectorY[iVector]);
+                mesh.Effect.SetValue("windNormalX", vectorWindOld.X);
+                mesh.Effect.SetValue("windNormalZ", vectorWindOld.Y);
+
+                mesh.UpdateMeshTransform();
                 mesh.render();
+
                 //mesh.BoundingBox.render();
             }
         }

@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using TGC.Core.SceneLoader;
-using TGC.Core.Geometry;
 using TGC.Core.Shaders;
 using Effect = Microsoft.DirectX.Direct3D.Effect;
 
@@ -64,7 +63,7 @@ namespace TGC.Group.Model.GameObjects {
             return lista;
         }
 
-        public List<TgcMesh> createObjects(int cantidad, String dir, float deltaY, float xIni, float zIni, string tecnica) {
+        public List<TgcMesh> createRocas(int cantidad, String dir, float deltaY, float xIni, float zIni) {
             TgcMesh objeto = mapa.Loader.loadSceneFromFile(mapa.MediaDir + dir).Meshes[0];
             List<TgcMesh> lista = new List<TgcMesh>();
             TgcMesh instance;
@@ -73,12 +72,28 @@ namespace TGC.Group.Model.GameObjects {
                 instance = objeto.createMeshInstance(objeto.Name);
 
                 instance.Effect = effect;
+                instance.Technique = "Fog";
                 
-                if (tecnica == null) {
-                    instance.Technique = "Default";
-                } else {
-                    instance.Technique = tecnica;
-                }
+                instance.Scale = getRandomScaleVector();
+                instance.Position = getRandomPositionVector(deltaY, xIni, zIni);
+                instance.Transform = Matrix.Scaling(instance.Scale) * Matrix.Translation(instance.Position);
+                instance.updateBoundingBox();
+                instance.AlphaBlendEnable = true;
+                lista.Add(instance);
+            }
+            return lista;
+        }
+        
+        public List<TgcMesh> createObjects(int cantidad, String dir, float deltaY, float xIni, float zIni) {
+            TgcMesh objeto = mapa.Loader.loadSceneFromFile(mapa.MediaDir + dir).Meshes[0];
+            List<TgcMesh> lista = new List<TgcMesh>();
+            TgcMesh instance;
+
+            for (int i = 1; i <= cantidad; i++) {
+                instance = objeto.createMeshInstance(objeto.Name);
+
+                instance.Effect = effect;
+                instance.Technique = "Wind";
 
                 instance.Scale = getRandomScaleVector();
                 instance.Position = getRandomPositionVector(deltaY, xIni, zIni);
