@@ -119,10 +119,7 @@ namespace TGC.Group.Model{
                     miCamara.gameStart = true;
                     miCamara.LockCam = !miCamara.LockCam;
                     break;
-                    case 1:// opciones
-
-                    break;
-                    case 2:// quit
+                    case 1:// quit
                     quit = true;
                     return;
                 }
@@ -135,7 +132,7 @@ namespace TGC.Group.Model{
             if (personaje.hambre <= 0 && personaje.sed <= 0) {
                 restartGame();
             }
-            mapa.update(miCamara.Position, ElapsedTime);
+            mapa.update(miCamara.Position, hora.toScaleFactor01());
         } 
         ///Se llama cada vez que hay que refrescar la pantalla.
         public override void Render() {
@@ -168,7 +165,7 @@ namespace TGC.Group.Model{
 
             DrawText.drawText("Camera pos: " + Core.Utils.TgcParserUtils.printVector3(miCamara.Position), 15, 20, System.Drawing.Color.Red);
             DrawText.drawText("Camera LookAt: " + Core.Utils.TgcParserUtils.printVector3(miCamara.LookAt - miCamara.Position), 15, 40, System.Drawing.Color.Red);
-            DrawText.drawText("Camera LookAt: " + mapa.SkyBox.Size, 15, 80, System.Drawing.Color.Red);
+            DrawText.drawText("Camera LookAt: " + hora.to12(), 15, 60, System.Drawing.Color.Red);
 
             gui.render(DrawText, formPrincipal);
 
@@ -183,7 +180,7 @@ namespace TGC.Group.Model{
 
             effect.Technique = "OscurecerTechnique";
             effect.SetValue("scaleFactor", hora.toScaleFactor());
-
+            effect.SetValue("scaleFactor", 0);
 
             effect.SetValue("render_target2D", renderTarget2D);
 

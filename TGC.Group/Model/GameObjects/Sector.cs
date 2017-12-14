@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 using TGC.Core.Collision;
 using TGC.Core.Direct3D;
 using TGC.Core.Geometry;
 using TGC.Core.SceneLoader;
+using TGC.Core.Utils;
 using TGC.Group.Model.GameObject;
 
 namespace TGC.Group.Model.GameObjects {
@@ -152,7 +154,7 @@ namespace TGC.Group.Model.GameObjects {
             }
         }
 
-        public void render(float ElapsedTime, Vector3 camPos) {
+        public void render(float ElapsedTime, Vector3 camPos, Hora hora) {
             D3DDevice.Instance.Device.SetTexture(0, mapa.terrainTexture);
             D3DDevice.Instance.Device.SetTexture(1, null);
             D3DDevice.Instance.Device.Material = D3DDevice.DEFAULT_MATERIAL;
@@ -181,8 +183,8 @@ namespace TGC.Group.Model.GameObjects {
 
                 mesh.Effect.SetValue("distCamMesh", ((camPos - new Vector3(0, camPos.Y, 0)) - (mesh.Position - new Vector3(0, mesh.Position.Y, 0))).Length());
                 
-                mesh.Effect.SetValue("StartFogDistance", 1300);//1584f);
-                mesh.Effect.SetValue("EndFogDistance", 1500);//1684f);
+                mesh.Effect.SetValue("StartFogDistance", 1000f);
+                mesh.Effect.SetValue("EndFogDistance", 1090f);
                 mesh.Effect.SetValue("Density", 0.0025f);
 
                 mesh.Effect.SetValue("time", ElapsedTime);
@@ -190,6 +192,21 @@ namespace TGC.Group.Model.GameObjects {
                 mesh.Effect.SetValue("windNormalX", vectorWindOld.X);
                 mesh.Effect.SetValue("windNormalZ", vectorWindOld.Y);
 
+                
+                //Cargar variables shader de la luz
+                mesh.Effect.SetValue("lightColor", ColorValue.FromColor(Color.White));
+                mesh.Effect.SetValue("lightPosition", TgcParserUtils.vector3ToFloat4Array(camPos + new Vector3(0, 20, 0)));
+                mesh.Effect.SetValue("eyePosition", TgcParserUtils.vector3ToFloat4Array(camPos));
+                mesh.Effect.SetValue("lightIntensity", 12f);
+                mesh.Effect.SetValue("lightAttenuation", 0.4f);
+
+                //Cargar variables de shader de Material. El Material en realidad deberia ser propio de cada mesh. Pero en este ejemplo se simplifica con uno comun para todos
+                mesh.Effect.SetValue("materialEmissiveColor", ColorValue.FromColor(Color.Black));
+                mesh.Effect.SetValue("materialAmbientColor", ColorValue.FromColor(Color.White));
+                mesh.Effect.SetValue("materialDiffuseColor", ColorValue.FromColor(Color.White));
+                mesh.Effect.SetValue("materialSpecularColor", ColorValue.FromColor(Color.White));
+                mesh.Effect.SetValue("materialSpecularExp", 9f);
+                
                 mesh.UpdateMeshTransform();
                 mesh.render();
 

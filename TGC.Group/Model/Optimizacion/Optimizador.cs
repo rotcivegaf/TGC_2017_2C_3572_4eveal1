@@ -42,7 +42,7 @@ namespace TGC.Group.Model.Optimizacion {
 
             for(int i = 0; i < mapa.sectores.Length; i++) {
                 if (seVe(camara, mapa.sectores[i])) {
-                    mapa.sectores[i].render(time, camara.Position);
+                    mapa.sectores[i].render(time, camara.Position, hora);
                 }
             }
         }

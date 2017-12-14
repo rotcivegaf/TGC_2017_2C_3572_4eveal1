@@ -51,7 +51,7 @@ namespace TGC.Group.Model.GameObjects {
             TgcMesh instance = objeto.createMeshInstance("agua");
 
             instance.Effect = effect;
-            instance.Technique = "Agua";
+            instance.Technique = "AguaLight";
 
             instance.Scale = new Vector3(4,1,4);
             instance.Position = pos;
@@ -72,7 +72,7 @@ namespace TGC.Group.Model.GameObjects {
                 instance = objeto.createMeshInstance(objeto.Name);
 
                 instance.Effect = effect;
-                instance.Technique = "Fog";
+                instance.Technique = "FogLight";
                 
                 instance.Scale = getRandomScaleVector();
                 instance.Position = getRandomPositionVector(deltaY, xIni, zIni);
@@ -93,7 +93,7 @@ namespace TGC.Group.Model.GameObjects {
                 instance = objeto.createMeshInstance(objeto.Name);
 
                 instance.Effect = effect;
-                instance.Technique = "Wind";
+                instance.Technique = "FogWindLight";
 
                 instance.Scale = getRandomScaleVector();
                 instance.Position = getRandomPositionVector(deltaY, xIni, zIni);

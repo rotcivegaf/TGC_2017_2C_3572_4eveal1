@@ -50,15 +50,15 @@ namespace TGC.Group.Model.GameObjects{
             center = new Vector2(aux, aux);
             deltaCenter = length / 2;
             crearSectores();
-            CreateSkyBox();
+            createSkyBox();
         }
 
-        private void CreateSkyBox() {
+        private void createSkyBox() {
             //Crear SkyBox
             SkyBox = new TgcSkyBox();
-            SkyBox.Center = new Vector3(center.X/2, 0, center.Y/2);
-            
-            SkyBox.Size = new Vector3(length*1.5f, length*3, length*1.5f);
+            SkyBox.Center = new Vector3(center.X / 2, 0, center.Y / 2);
+
+            SkyBox.Size = new Vector3(length * 1.5f, length * 3, length * 1.5f);
 
             var texturesPath = MediaDir + "\\SkyBox\\";
             String imgNameRoot = "clouds";
@@ -72,8 +72,15 @@ namespace TGC.Group.Model.GameObjects{
             SkyBox.setFaceTexture(TgcSkyBox.SkyFaces.Front, texturesPath + imgNameRoot + "_bk." + imgExtension);
             SkyBox.setFaceTexture(TgcSkyBox.SkyFaces.Back, texturesPath + imgNameRoot + "_ft." + imgExtension);
             SkyBox.SkyEpsilon = 25f;
+
             //Inicializa todos los valores para crear el SkyBox
             SkyBox.Init();
+            var effect = TgcShaders.loadEffect(shaderDir + "SkyBoxShader.fx");
+
+            foreach (TgcMesh face in SkyBox.Faces) {
+                face.Effect = effect;
+                face.Technique = "Alpha";
+            }
         }
 
         public void crearSectores() {
@@ -159,17 +166,12 @@ namespace TGC.Group.Model.GameObjects{
 
             return heightmap;
         }
-        
-        public void update(Vector3 posicionCamara, float elapsedTime) {
-            foreach (TgcMesh face in SkyBox.Faces) {
-                face.AutoTransformEnable = true;
-                //face.rotateY(elapsedTime );
-                //face.Transform = Matrix.RotationY(elapsedTime);// * Matrix.Translation(posicionCamara + new Vector3(-SkyBox.Size.X / 2, 0, -SkyBox.Size.Z / 2));
-            }
-            foreach (TgcMesh face in SkyBox.Faces)
-                face.AutoTransformEnable = false;
-             
+
+        public void update(Vector3 posicionCamara, float factor) {
             SkyBox.Center = posicionCamara - new Vector3(SkyBox.Size.X / 2, 0, SkyBox.Size.Z / 2);
+            foreach (TgcMesh face in SkyBox.Faces) {
+                face.Effect.SetValue("factor", factor);
+            }
         }
 
         public void render() {

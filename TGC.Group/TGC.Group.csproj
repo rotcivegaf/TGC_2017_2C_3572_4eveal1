@@ -179,6 +179,7 @@
     <Content Include="Shaders\ObjectShader.fx" />
     <Content Include="Shaders\PostProcess.fx" />
     <Content Include="Shaders\MenuShader.fx" />
+    <Content Include="Shaders\SkyBoxShader.fx" />
     <Content Include="Shaders\Varios.fx" />
     <Content Include="Shaders\zBuffer.fx" />
   </ItemGroup>
