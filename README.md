@@ -4,11 +4,12 @@ Video Juego basado en **Survival Craft** desarrollado con el Framework **TGCView
 ## Integrante ##
 
 Victor Fage
-https://github.com/rotcivegaf/TGC_2017_2C_3572_4eveal1/blob/master/screen%20entrega/1.jpg
-https://github.com/rotcivegaf/TGC_2017_2C_3572_4eveal1/blob/master/screen%20entrega/2.jpg
+<img src="https://github.com/rotcivegaf/TGC_2017_2C_3572_4eveal1/blob/master/screen%20entrega/1.jpg" height="500">
+<img src="https://github.com/rotcivegaf/TGC_2017_2C_3572_4eveal1/blob/master/screen%20entrega/2.jpg" height="500">
 
 ## ScreenShots ##
-https://github.com/rotcivegaf/TGC_2017_2C_3572_4eveal1/blob/master/screen%20entrega/1.png
+![Image of Yaktocat](https://github.com/rotcivegaf/TGC_2017_2C_3572_4eveal1/blob/master/screen%20entrega/1.png)
+
 https://github.com/rotcivegaf/TGC_2017_2C_3572_4eveal1/blob/master/screen%20entrega/2.png
 https://github.com/rotcivegaf/TGC_2017_2C_3572_4eveal1/blob/master/screen%20entrega/3.png
 
