@@ -34,11 +34,12 @@
         }
 
         public float toHora() {
-            return time % 24;
+            return (time) % 24;
+            return (time / 4) % 24;
         }
 
         public void updateTime(float time) {
-            this.time += time / 4;
+            this.time += time;
         }
     }
 }

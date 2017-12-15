@@ -13,7 +13,7 @@ using TGC.Core.Shaders;
 
 namespace TGC.Group.Model.GameObjects{
     public class Mapa {
-        public TgcSkyBox SkyBox { get; set; }
+        public SkyBox SkyBox { get; set; }
 
         public Vector2 center;
         public TgcSceneLoader Loader;
@@ -55,22 +55,21 @@ namespace TGC.Group.Model.GameObjects{
 
         private void createSkyBox() {
             //Crear SkyBox
-            SkyBox = new TgcSkyBox();
-            SkyBox.Center = new Vector3(center.X / 2, 0, center.Y / 2);
-
-            SkyBox.Size = new Vector3(length * 1.5f, length * 3, length * 1.5f);
+            SkyBox = new SkyBox();
+            SkyBox.Size = new TGCVector3(length * 1.5f, length * 3, length * 1.5f);
+            SkyBox.Center = new TGCVector3(center.X / 2, 0, center.Y / 2);
 
             var texturesPath = MediaDir + "\\SkyBox\\";
             String imgNameRoot = "clouds";
             String imgExtension = "png";
             //Configurar las texturas para cada una de las 6 caras
-            SkyBox.setFaceTexture(TgcSkyBox.SkyFaces.Up, texturesPath + imgNameRoot + "_up." + imgExtension);
-            SkyBox.setFaceTexture(TgcSkyBox.SkyFaces.Down, texturesPath + imgNameRoot + "_dn." + imgExtension);
-            SkyBox.setFaceTexture(TgcSkyBox.SkyFaces.Left, texturesPath + imgNameRoot + "_lf." + imgExtension);
-            SkyBox.setFaceTexture(TgcSkyBox.SkyFaces.Right, texturesPath + imgNameRoot + "_rt." + imgExtension);
+            SkyBox.setFaceTexture(SkyBox.SkyFaces.Up, texturesPath + imgNameRoot + "_up." + imgExtension);
+            SkyBox.setFaceTexture(SkyBox.SkyFaces.Down, texturesPath + imgNameRoot + "_dn." + imgExtension);
+            SkyBox.setFaceTexture(SkyBox.SkyFaces.Left, texturesPath + imgNameRoot + "_lf." + imgExtension);
+            SkyBox.setFaceTexture(SkyBox.SkyFaces.Right, texturesPath + imgNameRoot + "_rt." + imgExtension);
             //Hay veces es necesario invertir las texturas Front y Back si se pasa de un sistema RightHanded a uno LeftHanded
-            SkyBox.setFaceTexture(TgcSkyBox.SkyFaces.Front, texturesPath + imgNameRoot + "_bk." + imgExtension);
-            SkyBox.setFaceTexture(TgcSkyBox.SkyFaces.Back, texturesPath + imgNameRoot + "_ft." + imgExtension);
+            SkyBox.setFaceTexture(SkyBox.SkyFaces.Front, texturesPath + imgNameRoot + "_bk." + imgExtension);
+            SkyBox.setFaceTexture(SkyBox.SkyFaces.Back, texturesPath + imgNameRoot + "_ft." + imgExtension);
             SkyBox.SkyEpsilon = 25f;
 
             //Inicializa todos los valores para crear el SkyBox
@@ -80,6 +79,7 @@ namespace TGC.Group.Model.GameObjects{
             foreach (TgcMesh face in SkyBox.Faces) {
                 face.Effect = effect;
                 face.Technique = "Alpha";
+                face.AlphaBlendEnable = true;
             }
         }
 
@@ -167,16 +167,9 @@ namespace TGC.Group.Model.GameObjects{
             return heightmap;
         }
 
-        public void update(Vector3 posicionCamara, float factor) {
-            SkyBox.Center = posicionCamara - new Vector3(SkyBox.Size.X / 2, 0, SkyBox.Size.Z / 2);
-            foreach (TgcMesh face in SkyBox.Faces) {
-                face.Effect.SetValue("factor", factor);
-            }
-        }
-
-        public void render() {
+        public void render(Vector3 posicionCamara, Hora hora) {
             D3DDevice.Instance.Device.Transform.World = Matrix.Identity;
-            SkyBox.render();
+            SkyBox.render(posicionCamara, hora);
         }
 
         public void moverSectores(FPCamera camara) {

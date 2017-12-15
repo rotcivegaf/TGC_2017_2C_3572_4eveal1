@@ -103,6 +103,10 @@
     <Compile Include="Model\GameObjects\ObjectCreator.cs" />
     <Compile Include="Model\GameObjects\Personaje.cs" />
     <Compile Include="Model\GameObjects\Sector.cs" />
+    <Compile Include="Model\GameObjects\SkyBox.cs" />
+    <Compile Include="Model\GameObjects\TGCMatrix.cs" />
+    <Compile Include="Model\GameObjects\TGCVector3.cs" />
+    <Compile Include="Model\GameObjects\TGCVector4.cs" />
     <Compile Include="Model\Optimizacion\Optimizador.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -177,7 +181,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Shaders\ObjectShader.fx" />
-    <Content Include="Shaders\PostProcess.fx" />
     <Content Include="Shaders\MenuShader.fx" />
     <Content Include="Shaders\SkyBoxShader.fx" />
     <Content Include="Shaders\Varios.fx" />

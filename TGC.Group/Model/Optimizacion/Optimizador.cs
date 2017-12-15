@@ -37,7 +37,8 @@ namespace TGC.Group.Model.Optimizacion {
         }
 
         public void renderMap(float ElapsedTime, Hora hora) {
-            mapa.render();
+            mapa.render(camara.Position, hora);
+            
             time += ElapsedTime;
 
             for(int i = 0; i < mapa.sectores.Length; i++) {

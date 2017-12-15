@@ -33,10 +33,7 @@ struct VS_OUTPUT {
 //Pixel Shader
 float4 ps_alpha(VS_OUTPUT input) : COLOR0{
 	float4 fvBaseColor = tex2D(diffuseMap, input.Texture);
-
-    float value = ((fvBaseColor.r + fvBaseColor.g + fvBaseColor.b) / 3) * factor;
-
-    fvBaseColor.rgb = fvBaseColor.rgb* (1 - factor) + value* factor;
+    fvBaseColor.a = (1 - factor);
 
     return fvBaseColor; 
 }
