@@ -78,7 +78,6 @@ struct VS_OUTPUT3 {
 
 //Input del Pixel Shader
 struct PS_INPUT3 {
-    float4 PosView : COLOR0;
     float4 Position : POSITION0;
     float2 Texcoord : TEXCOORD0;
     float1 Fog:     FOG;
@@ -92,26 +91,18 @@ struct PS_INPUT3 {
 
 //Pixel Shader
 float4 ps_fog_light(PS_INPUT3 input) : COLOR0{
-
     //float4 fogFactor = float4(input.Fog, input.Fog, input.Fog, input.Fog);
-
     //finalColor.a += (1.0 - fogFactor);
-    
-    float zn = StartFogDistance;
-    float zf = EndFogDistance;
 
     float4 finalFogColor = tex2D(diffuseMap, input.Texcoord);
-    if (input.PosView.z>zn)
-        if (input.PosView.z > zf){
-            finalFogColor = ColorFog;
+    if (distCamMesh > StartFogDistance)
+        if (distCamMesh > EndFogDistance){
+            finalFogColor.a = 0;
         }else{
-		    // combino fog y textura
-            float1 total = zf - zn;
-            float1 resto = input.PosView.z - zn;
-            float1 proporcion = resto / total;
-            finalFogColor = lerp(finalFogColor, ColorFog, proporcion);
+            float1 total = EndFogDistance - StartFogDistance;
+            float1 delta = distCamMesh - StartFogDistance;
+            finalFogColor.a = 1 - (delta / total);
         }
-
 	//Normalizar vectores
 	float3 Nn = normalize(input.WorldNormal);
     float3 Ln = normalize(input.LightVec);

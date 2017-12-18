@@ -45,7 +45,7 @@ namespace TGC.Group.Model._2D {
             barraTemperatura = new Barra(mediaDir, posIni, "2D\\barY1.png", "2D\\barY2.png", "2D\\barY3.png", "Temperatura", drawer2D);
         }
 
-        public void render(TgcText2D DrawText, GameForm formPrincipal) {
+        public void render(TgcText2D DrawText) {
             drawer2D.BeginDrawSprite();
             
             DrawText.drawText("" + personaje.inventario.banana, 90, 550, System.Drawing.Color.White);

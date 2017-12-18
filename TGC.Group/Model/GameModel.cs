@@ -49,10 +49,9 @@ namespace TGC.Group.Model{
             Camara = miCamara;
             optimizador = new Optimizador(mapa, miCamara);
 
-            var OC = new ObjectCreator(mapa);
             var auxV3 = new Vector3(posX, mapa.getY(posX, posZ), posZ);
             gui = new GUI(personaje, auxV3, MediaDir);
-            menu = new Menu(OC, auxV3);
+            menu = new Menu(new ObjectCreator(mapa), auxV3);
             pickingRay = new TgcPickingRay(Input);
 
         }
@@ -85,23 +84,19 @@ namespace TGC.Group.Model{
         } 
         ///Se llama cada vez que hay que refrescar la pantalla.
         public override void Render() {
-            
-            //PreRender();
             BeginRenderScene();
             D3DDevice.Instance.Device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
-            ClearTextures(); //TODO no se si falta algo mas previo.
+            ClearTextures();
             optimizador.renderMap(ElapsedTime, hora);
-            //miCamara.CameraBox.BoundingBox.render();
 
             if (!gameStart)
                 menu.render();
 
-            gui.render(DrawText, formPrincipal);
+            gui.render(DrawText);
 
             if (quit) {
-                this.formPrincipal.ApplicationRunning = false;
-
-                this.formPrincipal.StopCurrentExample();
+                formPrincipal.ApplicationRunning = false;
+                formPrincipal.StopCurrentExample();
 
                 //Liberar Device al finalizar la aplicacion
                 D3DDevice.Instance.Dispose();

@@ -30,7 +30,6 @@ namespace TGC.Group.Model.GameObjects {
 
         private Vector3 collisionPoint;
         
-
         public Sector(Vector2 numero, Mapa mapa, ObjectCreator creador) {
             this.numero = numero;
             this.mapa = mapa;
