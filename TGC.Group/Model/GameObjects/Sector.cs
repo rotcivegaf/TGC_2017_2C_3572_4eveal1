@@ -182,7 +182,8 @@ namespace TGC.Group.Model.GameObjects {
             foreach (var mesh in ObjetosMesh) {
 
                 mesh.Effect.SetValue("distCamMesh", ((camPos - new Vector3(0, camPos.Y, 0)) - (mesh.Position - new Vector3(0, mesh.Position.Y, 0))).Length());
-                
+
+                mesh.Effect.SetValue("ColorFog", Color.LightGray.ToArgb());
                 mesh.Effect.SetValue("StartFogDistance", 1000f);
                 mesh.Effect.SetValue("EndFogDistance", 1090f);
                 mesh.Effect.SetValue("Density", 0.0025f);

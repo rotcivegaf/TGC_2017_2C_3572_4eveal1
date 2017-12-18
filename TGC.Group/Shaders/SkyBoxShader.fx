@@ -17,7 +17,7 @@ sampler2D diffuseMap = sampler_state{
 	MIPFILTER = LINEAR;
 };
     
-float factor;
+float factor = 0;
 
 struct VS_INPUT {
     float4 Position : POSITION0;

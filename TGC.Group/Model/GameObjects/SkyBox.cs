@@ -5,6 +5,7 @@ using System.Drawing;
 using TGC.Core.Direct3D;
 using TGC.Core.SceneLoader;
 using TGC.Core.Textures;
+using TGC.Core.Shaders;
 
 namespace TGC.Group.Model.GameObjects {
     public class SkyBox: IRenderObject {
@@ -19,13 +20,51 @@ namespace TGC.Group.Model.GameObjects {
             Right = 4,
             Left = 5
         }
-        public SkyBox() {
+        public SkyBox(float length, Vector2 center, float SkyEpsilon, string texturesPath, string shaderDir) {
             Faces = new TgcMesh[6];
             FaceTextures = new string[6];
-            SkyEpsilon = 25f;
+            this.SkyEpsilon = SkyEpsilon;
             Color = Color.White;
-            Center = TGCVector3.Empty;
-            Size = new TGCVector3(1000, 1000, 1000);
+            Size = new TGCVector3(length * 1.5f, length * 3, length * 1.5f);
+            Center = new TGCVector3(center.X / 2, 0, center.Y / 2);
+            
+            setFaceTexture(SkyBox.SkyFaces.Up, texturesPath + "5.png");
+            setFaceTexture(SkyBox.SkyFaces.Down, texturesPath + "6.png");
+            setFaceTexture(SkyBox.SkyFaces.Left, texturesPath + "3.png");
+            setFaceTexture(SkyBox.SkyFaces.Right, texturesPath + "1.png");
+            //Hay veces es necesario invertir las texturas Front y Back si se pasa de un sistema RightHanded a uno LeftHanded
+            setFaceTexture(SkyBox.SkyFaces.Front, texturesPath + "4.png");
+            setFaceTexture(SkyBox.SkyFaces.Back, texturesPath + "2.png");
+
+            var effect = TgcShaders.loadEffect(shaderDir);
+            for (var i = 0; i < Faces.Length; i++) {
+                var m = new Mesh(2, 4, MeshFlags.Managed, TgcSceneLoader.DiffuseMapVertexElements, D3DDevice.Instance.Device);
+                var skyFace = (SkyFaces)i;
+
+                using (var vb = m.VertexBuffer) {
+                    var data = vb.Lock(0, 0, LockFlags.None);
+                    var colorRgb = Color.ToArgb();
+                    cargarVertices(skyFace, data, colorRgb);
+                    vb.Unlock();
+                }
+                using (var ib = m.IndexBuffer) {
+                    var ibArray = new short[6];
+                    cargarIndices(ibArray);
+                    ib.SetData(ibArray, 0, LockFlags.None);
+                }
+                var faceName = Enum.GetName(typeof(SkyFaces), skyFace);
+                var faceMesh = new TgcMesh(m, "SkyBox-" + faceName, TgcMesh.MeshRenderType.DIFFUSE_MAP);
+                faceMesh.Materials = new[] { D3DDevice.DEFAULT_MATERIAL };
+                faceMesh.createBoundingBox();
+                faceMesh.Enabled = true;
+                var texture = TgcTexture.createTexture(D3DDevice.Instance.Device, FaceTextures[i]);
+                faceMesh.DiffuseMaps = new[] { texture };
+                Faces[i] = faceMesh;
+                centro000 = -new Vector3(Size.X / 2, 0, Size.Z / 2);
+                Faces[i].Effect = effect;
+                Faces[i].Technique = "Alpha";
+                Faces[i].AlphaBlendEnable = true;
+            }
         }
         public float SkyEpsilon { get; set; }
         public TGCVector3 Size { get; set; }
@@ -51,11 +90,11 @@ namespace TGC.Group.Model.GameObjects {
             }
         }
 
-        public void render(Vector3 posicionCamara, Hora hora) {
-            var pos = Matrix.Translation(centro000) * Matrix.RotationY(hora.time / 150) * Matrix.Translation(new TGCVector3(posicionCamara));
+        public void render(Vector3 posicionCamara, float factor, float time) {
+            var pos = Matrix.Translation(centro000) * Matrix.RotationY(time / 75) * Matrix.Translation(new TGCVector3(posicionCamara));
             
             foreach (var face in Faces) {
-                face.Effect.SetValue("factor", hora.toScaleFactor01());
+                face.Effect.SetValue("factor", factor);
                 face.Transform = pos;
                 face.render();
             }
@@ -69,34 +108,6 @@ namespace TGC.Group.Model.GameObjects {
 
         public void setFaceTexture(SkyFaces face, string texturePath) {
             FaceTextures[(int)face] = texturePath;
-        }
-
-        public void Init() {
-            for (var i = 0; i < Faces.Length; i++) {
-                var m = new Mesh(2, 4, MeshFlags.Managed, TgcSceneLoader.DiffuseMapVertexElements, D3DDevice.Instance.Device);
-                var skyFace = (SkyFaces)i;
-
-                using (var vb = m.VertexBuffer) {
-                    var data = vb.Lock(0, 0, LockFlags.None);
-                    var colorRgb = Color.ToArgb();
-                    cargarVertices(skyFace, data, colorRgb);
-                    vb.Unlock();
-                }
-                using (var ib = m.IndexBuffer) {
-                    var ibArray = new short[6];
-                    cargarIndices(ibArray);
-                    ib.SetData(ibArray, 0, LockFlags.None);
-                }
-                var faceName = Enum.GetName(typeof(SkyFaces), skyFace);
-                var faceMesh = new TgcMesh(m, "SkyBox-" + faceName, TgcMesh.MeshRenderType.DIFFUSE_MAP);
-                faceMesh.Materials = new[] { D3DDevice.DEFAULT_MATERIAL };
-                faceMesh.createBoundingBox();
-                faceMesh.Enabled = true;
-                var texture = TgcTexture.createTexture(D3DDevice.Instance.Device, FaceTextures[i]);
-                faceMesh.DiffuseMaps = new[] { texture };
-                Faces[i] = faceMesh;
-                centro000 = -new Vector3(Size.X / 2, 0, Size.Z / 2);
-            }
         }
         
         private void cargarVertices(SkyFaces face, GraphicsStream data, int color) {

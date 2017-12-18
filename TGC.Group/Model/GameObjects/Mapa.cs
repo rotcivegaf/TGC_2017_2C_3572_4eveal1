@@ -5,15 +5,15 @@ using Microsoft.DirectX.Direct3D;
 using System.Drawing;
 using TGC.Core.Direct3D;
 using TGC.Core.SceneLoader;
-using TGC.Core.Terrain;
 using TGC.Core.Collision;
 using TGC.Group.Model.Camera;
 using TGC.Group.Model.GameObject;
-using TGC.Core.Shaders;
 
 namespace TGC.Group.Model.GameObjects{
     public class Mapa {
-        public SkyBox SkyBox { get; set; }
+        public SkyBox SkyBoxDia1 { get; set; }
+        public SkyBox SkyBoxDia2 { get; set; }
+        public SkyBox SkyBoxNoche { get; set; }
 
         public Vector2 center;
         public TgcSceneLoader Loader;
@@ -33,6 +33,7 @@ namespace TGC.Group.Model.GameObjects{
         public int totalVertices;
 
         public String shaderDir;
+        public bool dia = true;
 
         public Mapa(String mediaDir, String shaderDir) {
             Device = D3DDevice.Instance.Device;//Device de DirectX para crear primitivas.
@@ -50,37 +51,13 @@ namespace TGC.Group.Model.GameObjects{
             center = new Vector2(aux, aux);
             deltaCenter = length / 2;
             crearSectores();
-            createSkyBox();
+            createSkyBoxs();
         }
 
-        private void createSkyBox() {
-            //Crear SkyBox
-            SkyBox = new SkyBox();
-            SkyBox.Size = new TGCVector3(length * 1.5f, length * 3, length * 1.5f);
-            SkyBox.Center = new TGCVector3(center.X / 2, 0, center.Y / 2);
-
-            var texturesPath = MediaDir + "\\SkyBox\\";
-            String imgNameRoot = "clouds";
-            String imgExtension = "png";
-            //Configurar las texturas para cada una de las 6 caras
-            SkyBox.setFaceTexture(SkyBox.SkyFaces.Up, texturesPath + imgNameRoot + "_up." + imgExtension);
-            SkyBox.setFaceTexture(SkyBox.SkyFaces.Down, texturesPath + imgNameRoot + "_dn." + imgExtension);
-            SkyBox.setFaceTexture(SkyBox.SkyFaces.Left, texturesPath + imgNameRoot + "_lf." + imgExtension);
-            SkyBox.setFaceTexture(SkyBox.SkyFaces.Right, texturesPath + imgNameRoot + "_rt." + imgExtension);
-            //Hay veces es necesario invertir las texturas Front y Back si se pasa de un sistema RightHanded a uno LeftHanded
-            SkyBox.setFaceTexture(SkyBox.SkyFaces.Front, texturesPath + imgNameRoot + "_bk." + imgExtension);
-            SkyBox.setFaceTexture(SkyBox.SkyFaces.Back, texturesPath + imgNameRoot + "_ft." + imgExtension);
-            SkyBox.SkyEpsilon = 25f;
-
-            //Inicializa todos los valores para crear el SkyBox
-            SkyBox.Init();
-            var effect = TgcShaders.loadEffect(shaderDir + "SkyBoxShader.fx");
-
-            foreach (TgcMesh face in SkyBox.Faces) {
-                face.Effect = effect;
-                face.Technique = "Alpha";
-                face.AlphaBlendEnable = true;
-            }
+        private void createSkyBoxs() {
+            SkyBoxDia1 = new SkyBox(length, center, 5, MediaDir + "\\SkyBox\\", shaderDir + "SkyBoxShader.fx");
+            SkyBoxDia2 = new SkyBox(length, center, 5, MediaDir + "\\SkyBox2\\", shaderDir + "SkyBoxShader.fx");
+            SkyBoxNoche = new SkyBox(length, center, 5, MediaDir + "\\SkyBox3\\", shaderDir + "SkyBoxShader.fx");
         }
 
         public void crearSectores() {
@@ -169,7 +146,46 @@ namespace TGC.Group.Model.GameObjects{
 
         public void render(Vector3 posicionCamara, Hora hora) {
             D3DDevice.Instance.Device.Transform.World = Matrix.Identity;
-            SkyBox.render(posicionCamara, hora);
+            
+            var aux = hora.to24();
+
+            if (aux > 5 && aux < 7) {
+                var factor = (hora.to24() - 5) % 3;
+                if (hora.pasoANoche) {
+                    SkyBoxDia1.render(posicionCamara, factor, hora.time);
+                } else {
+                    SkyBoxDia2.render(posicionCamara, factor, hora.time);
+                }
+                SkyBoxNoche.render(posicionCamara, 1-factor, hora.time);
+                dia = true;
+                return;
+            }
+            if (aux > 17 && aux < 19) {
+                var factor = (hora.to24() - 17) % 3;
+                if (hora.pasoANoche) {
+                    SkyBoxDia1.render(posicionCamara, 1 - factor, hora.time);
+                } else {
+                    SkyBoxDia2.render(posicionCamara, 1 - factor, hora.time);
+                }
+                SkyBoxNoche.render(posicionCamara, factor, hora.time);
+                dia = false;
+                return;
+            }
+            if (dia) {
+                if (hora.pasoANoche) {
+                    SkyBoxDia1.render(posicionCamara, 1, hora.time);
+                } else {
+                    SkyBoxDia2.render(posicionCamara, 1, hora.time);
+                }
+                SkyBoxNoche.render(posicionCamara, 0, hora.time);
+            } else {
+                if (hora.pasoANoche) {
+                    SkyBoxDia1.render(posicionCamara, 0, hora.time);
+                } else {
+                    SkyBoxDia2.render(posicionCamara, 0, hora.time);
+                }
+                SkyBoxNoche.render(posicionCamara, 1, hora.time);
+            }
         }
 
         public void moverSectores(FPCamera camara) {

@@ -111,7 +111,8 @@ namespace TGC.Group.Model{
 
             //DrawText.drawText("Camera pos: " + Core.Utils.TgcParserUtils.printVector3(miCamara.Position), 15, 20, System.Drawing.Color.Red);
             //DrawText.drawText("Camera LookAt: " + Core.Utils.TgcParserUtils.printVector3(miCamara.LookAt - miCamara.Position), 15, 40, System.Drawing.Color.Red);
-            //DrawText.drawText("Camera LookAt: " + hora.to12(), 15, 60, System.Drawing.Color.Red);
+            //DrawText.drawText("Camera LookAt: " + hora.to24(), 15, 40, System.Drawing.Color.Red);
+            //DrawText.drawText("Camera LookAt: " + hora.pasoANoche, 15, 60, System.Drawing.Color.Red);
 
             PostRender();
         }
