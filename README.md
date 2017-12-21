@@ -16,4 +16,4 @@ Victor Fage
 
 ## Game Play ##
 
-<center><a href='https://d.tube/#!/v/shetrix/tezwin9g'><img src='https://d.tube/#!/v/shetrix/wlif13ys'></a></center><hr>
+<center><a href='https://d.tube/#!/v/shetrix/wlif13ys'><img src='https://d.tube/#!/v/shetrix/wlif13ys'></a></center><hr>
